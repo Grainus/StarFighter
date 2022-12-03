@@ -118,9 +118,52 @@ class GameController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = GameView(self.main_frame)
+
+        self.player = self.view.canvas.create_rectangle(0, 0, 10, 10, fill="red")
+
+        self.ennemyArray = []
+        self.bulletArray = []
+        self.objectArray = []
+
+        self.bind_mouse_pregame()
+
+    def initalize_game(self):
+        """Initialisation du jeu"""
+        # TODO: Config.get_instant()
+        self.bind_mouse_game()
+        self.move_ennemy()
+
+    def bind_mouse_pregame(self):
+        """Bind les boutons de la souris avant le début du jeu"""
+        self.view.canvas.bind("<Button-1>", lambda event: self.initalize_game())
+
+    def bind_mouse_game(self):
+        """Bind du carré à la souris afin qu'il suive le curseur"""
+        self.view.canvas.bind("<Motion>", self.mouse_listener_move)
+        self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
+        self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
+
+    def mouse_listener_move(self, event):
+        """Déplacement du carré"""
+        #self.view.canvas.coords(self.player, event.x, event.y, event.x + 10, event.y + 10)
+        print(event.x, event.y)
+
+    def mouse_listener_left_click(self, event):
+        """Création d'un projectile"""
+        self.bulletArray.append(self.view.canvas.create_rectangle(event.x, event.y, event.x + 10, event.y + 10, fill="blue"))
+
+    def mouse_listener_right_click(self, event):
+        """Création d'un ennemi"""
+        self.ennemyArray.append(self.view.canvas.create_rectangle(event.x, event.y, event.x + 10, event.y + 10, fill="green"))
+
+    def move_ennemy(self):
+        """Déplacement des ennemis"""
+        for ennemy in self.ennemyArray:
+            self.view.canvas.move(ennemy, 100, 100)
+        self.root.after(100, self.move_ennemy)
 
 
 class ArsenalController(Controller):
