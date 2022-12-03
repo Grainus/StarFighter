@@ -35,14 +35,14 @@ from abc import ABC
 from typing import TYPE_CHECKING
 
 
-class View:
+class View(ABC):
     """Classe abstraite de la vue
 
     :argument main_frame: Frame principale de la vue
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         self.main_frame = main_frame
 
     def draw(self):
@@ -73,16 +73,12 @@ class View:
 
 class MenuView(View):
     """Classe de la vue du menu
-
-    :argument main_frame: Frame principale de la vue
-
-    :param this.main_frame: Frame principale de la vue
-    :param this.title: BetterLabel du titre
-    :param this.buttonContainer: Container des boutons
-    :param this.quit_button: Bouton de fermeture du jeu
+    :argument: main_frame: Frame principale de la vue
+    :param: this.title: Label du titre du jeu
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+        print(self.main_frame)
 
         self.title = BetterLabel(self.main_frame, 0.5, 0.05, text="StarFighter",
                                  font=("Arial", 50))
@@ -93,9 +89,9 @@ class MenuView(View):
         self.buttonContainer.config(highlightbackground="black",
                                     highlightthickness=1)
 
-        self.quit_button = BetterButton(self.buttonContainer, 0.5, 0.5,
-                                        text="Quitter le jeu", font=("Arial", 20))
-        self.quit_button.config(width=10, height=2)
+        self.start_game_button = BetterButton(self.buttonContainer, 0.5, 0.5,
+                                                text="Jouer", font=("Arial", 20))
+        self.start_game_button.config(width=10, height=2)
 
     def draw(self):
         """Méthode de lancement de la vue"""
@@ -109,8 +105,14 @@ class GameView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+        self.canvas = BetterCanvas(self.main_frame)
+        self.canvas.config(bg="black")
+
+    def draw(self):
+        """Méthode de lancement de la vue"""
+        super(GameView, self).draw()
 
 
 class HighscoreView(View):
