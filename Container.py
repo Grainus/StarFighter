@@ -25,7 +25,7 @@ Il contient les classes suivantes:
     - BetterLabel
 """
 
-from tkinter import Frame as Frame, Label as Label, Button as Button
+from tkinter import Frame, Label, Button, Canvas
 
 
 class BetterButton(Button):
