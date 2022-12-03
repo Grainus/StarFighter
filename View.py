@@ -121,7 +121,7 @@ class HighscoreView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
 
@@ -132,7 +132,7 @@ class OptionsView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
 
@@ -142,5 +142,5 @@ class ArsenalView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)

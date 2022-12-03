@@ -47,12 +47,12 @@ class Controller(ABC):
     :param self.view: Vue associée au controlleur
     """
 
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         self.root = root
         """En quelque sorte, il s'agit de la fenêtre principale du jeu
         qui est aussi responsable de sa boucle principale."""
 
-        self.main_frame = tk.Frame(root)
+        self.main_frame = BetterFrame(root, 0, 0)
         """Frame principale du jeu. Elle contient toutes les autres frames"""
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.view = None
@@ -71,10 +71,10 @@ class Controller(ABC):
         """Changement de controlleur"""
         self.view.destroy()
         self.root.controller = change_to(self.root)
-        self.root.controller.draw()
+        self.view.draw()
 
     def bind_base_buttons(self):
-        # If present, bind the quit_button, the start_game button and the options button
+        # If present, bind the quit_button, the start_game button and the options button as well as the highscore button
         if hasattr(self.view, "quit_button"):
             self.view.quit_button.bind("<Button-1>",
                                        lambda event: self.quit_game())
@@ -105,7 +105,7 @@ class MenuController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = MenuView(self.main_frame)
 
@@ -133,7 +133,7 @@ class ArsenalController(Controller):
     :param self.view: Vue associée au controlleur
 
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = ArsenalView(self.main_frame)
 
@@ -147,7 +147,7 @@ class HighscoreController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
 
@@ -161,6 +161,6 @@ class OptionsController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = OptionsView(self.main_frame)
