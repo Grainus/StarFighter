@@ -54,15 +54,14 @@ class View(ABC):
     def place_children(self, container):
         """Méthode abstraite de placement des widgets de la vue"""
         for widget in container.winfo_children():
-            if widget.winfo_children():
-                self.place_children(widget)
-            widget.place(relx=widget.x, rely=widget.y, anchor="center")
+            if isinstance(widget, (BetterButton, BetterLabel, BetterFrame, BetterCanvas)):
+                if widget.winfo_children():
+                    self.place_children(widget)
+                widget.place(relx=widget.x, rely=widget.y, anchor="center")
 
     def destroy(self):
         """Méthode de destruction de la vue"""
-        for content in self.main_frame.winfo_children():
-            content.destroy()
-        self.main_frame.destroy()
+        self.main_frame.forget()
 
     def forget(self):
         """Méthode d'oublie de la vue"""
