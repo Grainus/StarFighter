@@ -31,7 +31,8 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
-import tkinter as tk
+from tkinter import Tk
+from Container import BetterFrame
 from abc import ABC  # Classe abstraite
 
 from View import MenuView, GameView, HighscoreView, OptionsView, ArsenalView

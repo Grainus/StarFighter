@@ -30,8 +30,8 @@ Classe:
     - ArsenalView : Classe de la vue de l'arsenal
 """
 
-from Container import BetterButton, BetterLabel, BetterFrame
-from tkinter import Frame
+from Container import BetterButton, BetterLabel, BetterFrame, BetterCanvas
+from abc import ABC
 from typing import TYPE_CHECKING
 
 
