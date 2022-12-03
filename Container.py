@@ -131,3 +131,9 @@ class BetterFrame(Frame):
         super().__init__(master, **kwargs)
         self.x = x
         self.y = y
+
+
+class BetterCanvas(Canvas):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.pack(expand=True, fill="both")
