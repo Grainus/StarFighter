@@ -31,9 +31,10 @@ Classe:
 """
 
 from Container import BetterButton, BetterLabel, BetterFrame
-from tkinter import Frame
+from tkinter import Frame,PhotoImage
 from typing import TYPE_CHECKING
-
+import os.path
+from PIL import Image, ImageTk
 
 class View:
     """Classe abstraite de la vue
@@ -70,6 +71,13 @@ class View:
             content.pack_forget()
         self.main_frame.pack_forget()
 
+    def img_resize(self, file: str, dimensions: tuple[int, int]) -> PhotoImage:
+        img = Image.open(file)
+        img = img.resize(dimensions)
+        img = img.convert('RGB')
+
+        return ImageTk.PhotoImage(img)
+
 
 class MenuView(View):
     """Classe de la vue du menu
@@ -84,18 +92,42 @@ class MenuView(View):
     def __init__(self, main_frame: Frame):
         super().__init__(main_frame)
 
-        self.title = BetterLabel(self.main_frame, 0.5, 0.05, text="StarFighter",
-                                 font=("Arial", 50))
+        self.btn_width = 400
+        self.btn_height = 200
+        self.logo_width = 600
+        self.logo_height = 200
 
-        self.buttonContainer = BetterFrame(self.main_frame, 0.5, 0.9)
+        self.background_img = self.img_resize(
+            "Graphics/background.gif",(1200,800)
+        )
+        self.logo_img = self.img_resize(
+            "Graphics/logo.png",(self.logo_width,self.logo_height)
+        )
+        self.play_img = self.img_resize(
+            "Graphics/play.png",(self.btn_width,self.btn_height)
+        )
+        self.arsenal_img = self.img_resize(
+            "Graphics/arsenal.png",(self.btn_width,self.btn_height)
+        )
+        self.options_img = self.img_resize(
+            "Graphics/options.png",(self.btn_width,self.btn_height)
+        )
+        self.highscores_img = self.img_resize(
+            "Graphics/highscores.png",(self.btn_width,self.btn_height)
+        )
+        self.quit_img = self.img_resize(
+            "Graphics/quit.png",(self.btn_width,self.btn_height)
+        )
+        
+        self.background = BetterLabel(self.main_frame,0.5,0.5,image=self.background_img)
+        self.logo = BetterLabel(self.main_frame, 0.5, 0.1, image=self.logo_img,width=self.logo_width,height=self.logo_height)
+        
+        self.play_button = BetterButton(self.main_frame, 0.25, 0.4, image=self.play_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
+        self.arsenal_button = BetterButton(self.main_frame, 0.75, 0.4, image=self.arsenal_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
+        self.options_button = BetterButton(self.main_frame, 0.25, 0.65, image=self.options_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
+        self.highscores_button = BetterButton(self.main_frame, 0.75, 0.65, image=self.highscores_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
+        self.quit_button = BetterButton(self.main_frame, 0.5, 0.9, image=self.quit_img,borderwidth=0)
 
-        self.buttonContainer.config(width=800, height=150)
-        self.buttonContainer.config(highlightbackground="black",
-                                    highlightthickness=1)
-
-        self.quit_button = BetterButton(self.buttonContainer, 0.5, 0.5,
-                                        text="Quitter le jeu", font=("Arial", 20))
-        self.quit_button.config(width=10, height=2)
 
     def draw(self):
         """Méthode de lancement de la vue"""
