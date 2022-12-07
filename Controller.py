@@ -79,7 +79,7 @@ class Controller(ABC):
                                        lambda event: self.quit_game())
 
         if hasattr(self.view, "start_game_button"):
-            self.view.start_game_button.bind("<Button-1>",
+            self.view.play_button.bind("<Button-1>",
                                              lambda event: self.change_controller(GameController))
 
         if hasattr(self.view, "options_button"):
@@ -87,7 +87,7 @@ class Controller(ABC):
                                           lambda event: self.change_controller(OptionsController))
 
         if hasattr(self.view, "highscore_button"):
-            self.view.highscore_button.bind("<Button-1>",
+            self.view.highscores_button.bind("<Button-1>",
                                             lambda event: self.change_controller(HighscoreController))
 
         if hasattr(self.view, "arsenal_button"):

@@ -19,9 +19,16 @@
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from abc import ABC
 
+class VaisseauModel():
+    def __init__(self):
+        #position de départ
+        self.x = 600
+        self.y = 50
+    pass
 
 class Model(ABC):
     raise NotImplementedError
+
 
 
 class GameModel(Model):
