@@ -22,4 +22,5 @@ from abc import ABC
 
 class Object(ABC):
     """Classe abstraite représentant un objet du jeu quel qu'il soit."""
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError

@@ -17,29 +17,33 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
-import Object
 
+from Object import Object
 
 class Alien(Object):
     """Classe abstraite pour les aliens"""
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
 
 
 class Alien1(Alien):
     """Classe pour les aliens de type 1"""
-    raise NotImplementedError
-
+    def __init__(self):
+        super().__init__()
 
 class Alien2(Alien):
     """Classe pour les aliens de type 2"""
-    raise NotImplementedError
+    def __init__(self):
+        super().__init__()
 
 
 class Alien3(Alien):
     """Classe pour les aliens de type 3"""
-    raise NotImplementedError
+    def __init__(self):
+        super().__init__()
 
 
 class Boss(Alien):
     """Classe pour les aliens de type BOSS"""
-    raise NotImplementedError
+    def __init__(self):
+        super().__init__()

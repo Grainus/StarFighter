@@ -84,17 +84,23 @@ class MenuView(View):
     def __init__(self, main_frame: Frame):
         super().__init__(main_frame)
 
-        self.title = BetterLabel(self.main_frame, 0.5, 0.05, text="StarFighter",
-                                 font=("Arial", 50))
+        self.title = BetterLabel(
+                self.main_frame, 0.5, 0.05, text="StarFighter",
+                font=("Arial", 50)
+        )
 
         self.buttonContainer = BetterFrame(self.main_frame, 0.5, 0.9)
 
         self.buttonContainer.config(width=800, height=150)
-        self.buttonContainer.config(highlightbackground="black",
-                                    highlightthickness=1)
+        self.buttonContainer.config(
+                highlightbackground="black",
+                highlightthickness=1
+        )
 
-        self.quit_button = BetterButton(self.buttonContainer, 0.5, 0.5,
-                                        text="Quitter le jeu", font=("Arial", 20))
+        self.quit_button = BetterButton(
+                self.buttonContainer, 0.5, 0.5,
+                text="Quitter le jeu", font=("Arial", 20)
+        )
         self.quit_button.config(width=10, height=2)
 
     def draw(self):

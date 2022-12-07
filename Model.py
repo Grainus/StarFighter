@@ -21,20 +21,25 @@ from abc import ABC
 
 
 class Model(ABC):
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
 
 
 class GameModel(Model):
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
 
 
 class HighscoreModel(Model):
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
 
 
 class ArsenalModel(Model):
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
 
 
 class OptionsModel(Model):
-    raise NotImplementedError
+    def __init__(self):
+        raise NotImplementedError
