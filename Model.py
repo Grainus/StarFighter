@@ -18,7 +18,16 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from abc import ABC
+from typing import overload, Type, TypeVar
 
+from Objects.Object import Object
+from Objects.Alien import Alien
+from Objects.Modifiers import Modifiers
+from Objects.Vaisseau import Vaisseau
+
+
+ObjT1 = TypeVar("ObjT1")
+ObjT2 = TypeVar("ObjT2")
 
 class Model(ABC):
     def __init__(self):
@@ -26,9 +35,43 @@ class Model(ABC):
 
 
 class GameModel(Model):
-    def __init__(self):
-        raise NotImplementedError
+    """Contient la logique et l'état d'une partie en cours."""
 
+    def __init__(self):
+        self.player = Vaisseau()
+        self.enemies: list[Alien] = []
+        self.sprites: list[Modifiers] = []
+
+    @overload
+    def get_collisions(
+            self, instance: Object, cls: Type[ObjT1]
+    ) -> list[ObjT1]: ...
+
+    @overload
+    def get_collisions(
+            self, cls1: Type[ObjT1], cls2: Type[ObjT2]
+    ) -> list[tuple[ObjT1, ObjT2]]: ...
+    
+    def get_collisions(
+            self, arg: Object | Type[ObjT1], cls: Type[ObjT2]
+    ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]]:
+        """Retourne une liste d'objets en collision.
+
+        Args:
+            arg: L'objet ou le type principal.
+            cls: La classe des objets qu'on veut comparer.
+
+        Returns:
+            Si le premier paramètre est un objet, une liste de tous les
+            objets de type `cls` qui sont en collision avec `arg`.
+            Si le premier paramètre est un type, une liste de tuples
+            contenants toutes les paires d'objets de type `arg` et `cls`
+            qui sont en collision.
+        """
+        if isinstance(arg, type):
+            raise NotImplementedError
+        else:
+            raise NotImplementedError
 
 class HighscoreModel(Model):
     def __init__(self):
