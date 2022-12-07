@@ -17,10 +17,50 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
+from __future__ import annotations
 from abc import ABC
 
+from Position import Point, Dimension2D
 
 class Object(ABC):
     """Classe abstraite représentant un objet du jeu quel qu'il soit."""
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, position: Point, width: float, height: float):
+        self.dimension = Dimension2D(width, height)
+        self.position = position
+        """Centre de l'objet"""
+        self.points = self.dimension.to_points(self.position, True)  # TODO: remove duplicate code (maybe remove annotation)
+        """Points supérieur gauche ↖ et inférieur droit ↘ de l'objeté"""
+
+    def _update_points(self) -> None:
+        self.points = self.dimension.to_points(self.position, True)
+
+    @property
+    def width(self):
+        return self.dimension.width
+
+    @width.setter
+    def width(self, value):
+        self.dimension.width = value
+        self._update_points()
+
+    @property
+    def height(self):
+        return self.dimension.height
+
+    @height.setter
+    def height(self, value):
+        self.dimension.height = value
+        self._update_points()
+
+    def collides(self, other: Object) -> bool:
+        """Vérifie si deux objets sont en collision"""
+        overlap_x = (
+            self.points[0].x <= other.points[0].x <= self.points[1].x or
+            self.points[0].x <= other.points[1].x <= self.points[1].x
+        )
+        overlap_y = (
+            self.points[0].y <= other.points[0].y <= self.points[1].y or
+            self.points[0].y <= other.points[1].y <= self.points[1].y
+        )
+
+        return overlap_x and overlap_y
