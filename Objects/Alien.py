@@ -18,9 +18,11 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 
+from abc import ABC
+
 from Object import Object
 
-class Alien(Object):
+class Alien(Object, ABC):
     """Classe abstraite pour les aliens"""
     def __init__(self):
         raise NotImplementedError
