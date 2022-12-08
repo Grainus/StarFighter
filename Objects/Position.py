@@ -70,20 +70,27 @@ class Vecteur(complex):
 
     def __pos__(self, *args, **kwargs) -> Self:
         return self.__class__(super().__pos__(*args, **kwargs))
-    
+
     def __iter__(self) -> Iterator:
         return iter(self.get_coordonnee())
-    
+
     def conjugate(self) -> Self:
         return self.__class__(super().conjugate())
 
+    @property
     def norme(self) -> float:
-        """Calcule la norme du vecteur avec l'origine."""
+        """Retourne ou modifie la norme du vecteur sans changer sa
+        direction.
+        """
         return abs(self)
+
+    @norme.setter
+    def norme(self, value: float) -> None:
+        self *= value / self.norme
 
     def unitaire(self) -> Self:
         """Retourne un vecteur unitaire dans la direction du vecteur."""
-        return self / self.norme()
+        return self / self.norme
     
     def rotate(self, angle: float) -> Self:
         """Retourne un vecteur avec une rotation appliquée."""
@@ -165,7 +172,7 @@ class Point:
 
     def __iter__(self) -> Iterator:
         return iter(self.get_coordonnee())
-    
+
     def distance(self, other: Self) -> float:
         """Calcule la distance entre deux points."""
         return math.dist(self.get_coordonnee(), other.get_coordonnee())
