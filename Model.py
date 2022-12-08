@@ -26,8 +26,8 @@ from Objects.Modifiers import Modifiers
 from Objects.Vaisseau import Vaisseau
 
 
-ObjT1 = TypeVar("ObjT1")
-ObjT2 = TypeVar("ObjT2")
+ObjT1 = TypeVar("ObjT1", bound=Object)
+ObjT2 = TypeVar("ObjT2", bound=Object)
 
 class Model(ABC):
     def __init__(self):
@@ -40,7 +40,7 @@ class GameModel(Model):
     def __init__(self):
         self.player = Vaisseau()
         self.enemies: list[Alien] = []
-        self.sprites: list[Modifiers] = []
+        self.sprites: list[Object] = []
 
     @overload
     def get_collisions(
@@ -69,9 +69,22 @@ class GameModel(Model):
             qui sont en collision.
         """
         if isinstance(arg, type):
-            raise NotImplementedError
+            return [
+                (obj1, obj2)
+                for obj1 in self.sprites
+                if isinstance(obj1, arg)
+                for obj2 in self.sprites
+                if isinstance(obj2, cls)
+                if obj1.collides(obj2)
+            ]
         else:
-            raise NotImplementedError
+            return [
+                obj
+                for obj in self.sprites
+                if isinstance(obj, cls)
+                if obj.collides(obj)
+            ]
+
 
 class HighscoreModel(Model):
     def __init__(self):
