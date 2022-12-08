@@ -18,7 +18,10 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from abc import ABC
-from typing import overload, Type, TypeVar
+from typing import overload, Type, TypeVar, Any
+
+from dataclasses import dataclass
+from enum import Enum
 
 from Objects.Object import Object
 from Objects.Alien import Alien
@@ -29,6 +32,22 @@ from Objects.Vaisseau import Vaisseau
 ObjT1 = TypeVar("ObjT1", bound=Object)
 ObjT2 = TypeVar("ObjT2", bound=Object)
 
+
+@dataclass
+class GameStats:
+    enemies_killed: int = 0
+    distance_traveled: float = 0
+
+class Difficulty(Enum):
+    """Représente une difficulté de jeu, et le multiplicateur de dégats
+    qui y est associé.
+    """
+    EASY = 0.75
+    NORMAL = 1
+    HARD = 2
+    EXTREME = 3
+    IMPOSSIBLE = 10
+
 class Model(ABC):
     def __init__(self):
         raise NotImplementedError
@@ -37,10 +56,13 @@ class Model(ABC):
 class GameModel(Model):
     """Contient la logique et l'état d'une partie en cours."""
 
-    def __init__(self):
+    def __init__(self, difficulty: Difficulty):
+        super().__init__()
+        self.difficulty = difficulty
         self.player = Vaisseau()
         self.enemies: list[Alien] = []
         self.sprites: list[Object] = []
+        self.stats = GameStats()
 
     @overload
     def get_collisions(
@@ -84,6 +106,15 @@ class GameModel(Model):
                 if isinstance(obj, cls)
                 if obj.collides(obj)
             ]
+
+    def update(self) -> None:
+        """Met à jour la position de tous les objets."""
+        for obj in self.sprites:
+            obj.update()
+
+    def start_wave(self, *args):
+        """Débute une vague d'ennemis"""
+        raise NotImplementedError
 
 
 class HighscoreModel(Model):
