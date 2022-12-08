@@ -20,7 +20,7 @@
 from __future__ import annotations
 from abc import ABC
 
-from Position import Point, Dimension2D
+from Position import Vecteur, Point, Dimension2D
 
 class Object(ABC):
     """Classe abstraite représentant un objet du jeu quel qu'il soit."""
@@ -30,6 +30,8 @@ class Object(ABC):
         """Centre de l'objet"""
         self.points = self.dimension.to_points(self.position, True)  # TODO: remove duplicate code (maybe remove annotation)
         """Points supérieur gauche ↖ et inférieur droit ↘ de l'objeté"""
+        self.velocity = Vecteur(0, 0)
+        self.acceleration: float = 0
 
     def _update_points(self) -> None:
         self.points = self.dimension.to_points(self.position, True)
@@ -52,6 +54,14 @@ class Object(ABC):
         self.dimension.height = value
         self._update_points()
 
+    @property
+    def speed(self) -> float:
+        return self.velocity.norme
+
+    @speed.setter
+    def speed(self, value) -> None:
+        self.velocity.norme = value
+
     def collides(self, other: Object) -> bool:
         """Vérifie si deux objets sont en collision"""
         overlap_x = (
@@ -64,3 +74,8 @@ class Object(ABC):
         )
 
         return overlap_x and overlap_y
+
+    def update(self) -> None:
+        """Mise à jour de la position de l'objet selon sa vélocité"""
+        self.speed += self.acceleration
+        self.position += self.velocity
