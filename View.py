@@ -30,7 +30,7 @@ Classe:
     - ArsenalView : Classe de la vue de l'arsenal
 """
 
-from Container import BetterButton, BetterLabel, BetterFrame
+from Container import BetterButton, BetterLabel, BetterFrame, BetterCanvas
 from tkinter import Frame,PhotoImage
 from typing import TYPE_CHECKING
 import os.path
@@ -74,8 +74,18 @@ class View:
     def img_resize(self, file: str, dimensions: tuple[int, int]) -> PhotoImage:
         img = Image.open(file)
         img = img.resize(dimensions)
-        img = img.convert('RGB')
-
+        img = img.convert('RGBA')
+        data = img.getdata()
+        
+        newData = []
+        for item in data:
+            if item[0] == 255 and item[1] == 255 and item[2] == 0:  # finding yellow colour
+                # replacing it with a transparent value
+                newData.append((255, 255, 255, 0))
+            else:
+                newData.append(item)
+        
+        img.putdata(newData)
         return ImageTk.PhotoImage(img)
 
 
@@ -96,9 +106,11 @@ class MenuView(View):
         self.btn_height = 200
         self.logo_width = 600
         self.logo_height = 200
+        self.background_width = 1204
+        self.background_height = 804
 
         self.background_img = self.img_resize(
-            "Graphics/background.gif",(1200,800)
+            "Graphics/background.gif",(self.background_width,self.background_height)
         )
         self.logo_img = self.img_resize(
             "Graphics/logo.png",(self.logo_width,self.logo_height)
@@ -118,16 +130,35 @@ class MenuView(View):
         self.quit_img = self.img_resize(
             "Graphics/quit.png",(self.btn_width,self.btn_height)
         )
-        
-        self.background = BetterLabel(self.main_frame,0.5,0.5,image=self.background_img)
-        self.logo = BetterLabel(self.main_frame, 0.5, 0.1, image=self.logo_img,width=self.logo_width,height=self.logo_height)
-        
-        self.play_button = BetterButton(self.main_frame, 0.25, 0.4, image=self.play_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
-        self.arsenal_button = BetterButton(self.main_frame, 0.75, 0.4, image=self.arsenal_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
-        self.options_button = BetterButton(self.main_frame, 0.25, 0.65, image=self.options_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
-        self.highscores_button = BetterButton(self.main_frame, 0.75, 0.65, image=self.highscores_img,borderwidth=0,width=self.btn_width,height=self.btn_height)
-        self.quit_button = BetterButton(self.main_frame, 0.5, 0.9, image=self.quit_img,borderwidth=0)
+        self.main_canvas = BetterCanvas(self.main_frame,0.5,0.5,width=self.background_width,height=self.background_height)
+        self.background = self.main_canvas.create_image(
+            self.background_width/2,self.background_height/2,
+            image = self.background_img
+            )
+        self.play_button =  self.main_canvas.create_image(
+            self.btn_width/2,self.btn_height/2,
+            image = self.play_img
+            )
+        self.arsenal_button =  self.main_canvas.create_image(
+            self.btn_width/2,self.btn_height/2,
+            image = self.arsenal_img
+            )
+        self.options_button =  self.main_canvas.create_image(
+            self.btn_width/2,self.btn_height/2,
+            image = self.options_img
+            )
+        self.highscores_button =  self.main_canvas.create_image(
+            self.btn_width/2,self.btn_height/2,
+            image = self.highscores_img
+            )
+        self.quit_button =  self.main_canvas.create_image(
+            self.btn_width/2,self.btn_height/2,
+            image = self.quit_img
+            )
 
+        
+
+        
 
     def draw(self):
         """Méthode de lancement de la vue"""
@@ -175,3 +206,6 @@ class ArsenalView(View):
     """
     def __init__(self, main_frame: Frame):
         super().__init__(main_frame)
+
+
+    
