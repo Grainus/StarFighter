@@ -131,6 +131,8 @@ class BetterFrame(Frame):
         self.x = x
         self.y = y
 
+
+class BetterCanvas(Canvas):
     """Classe représentant une canvas tkinter modifié pour le programme.
     Elle hérite de la classe tkinter.Canvas.
 
