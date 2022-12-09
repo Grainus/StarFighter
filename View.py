@@ -35,14 +35,14 @@ from tkinter import Frame, PhotoImage
 from PIL import Image, ImageTk
 
 
-class View:
+class View(ABC):
     """Classe abstraite de la vue
 
     :argument main_frame: Frame principale de la vue
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         self.main_frame = main_frame
 
     def draw(self):
@@ -54,15 +54,14 @@ class View:
     def place_children(self, container):
         """Méthode abstraite de placement des widgets de la vue"""
         for widget in container.winfo_children():
-            if widget.winfo_children():
-                self.place_children(widget)
-            widget.place(relx=widget.x, rely=widget.y, anchor="center")
+            if isinstance(widget, (BetterButton, BetterLabel, BetterFrame, BetterCanvas)):
+                if widget.winfo_children():
+                    self.place_children(widget)
+                widget.place(relx=widget.x, rely=widget.y, anchor="center")
 
     def destroy(self):
         """Méthode de destruction de la vue"""
-        for content in self.main_frame.winfo_children():
-            content.destroy()
-        self.main_frame.destroy()
+        self.main_frame.forget()
 
     def forget(self):
         """Méthode d'oublie de la vue"""
@@ -91,15 +90,10 @@ class View:
 
 class MenuView(View):
     """Classe de la vue du menu
-
-    :argument main_frame: Frame principale de la vue
-
-    :param this.main_frame: Frame principale de la vue
-    :param this.title: BetterLabel du titre
-    :param this.buttonContainer: Container des boutons
-    :param this.quit_button: Bouton de fermeture du jeu
+    :argument: main_frame: Frame principale de la vue
+    :param: this.title: Label du titre du jeu
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
         self.btn_width = 400
@@ -163,7 +157,7 @@ class MenuView(View):
         self.quit_button = self.main_canvas.create_image(
             self.background_width*0.5, self.background_height*0.8,
             image=self.quit_img)
-
+            
     def draw(self):
         """Méthode de lancement de la vue"""
         super(MenuView, self).draw()
@@ -176,8 +170,14 @@ class GameView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+        self.canvas = BetterCanvas(self.main_frame)
+        self.canvas.config(bg="black")
+
+    def draw(self):
+        """Méthode de lancement de la vue"""
+        super(GameView, self).draw()
 
 
 class HighscoreView(View):
@@ -187,7 +187,7 @@ class HighscoreView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
 
@@ -198,7 +198,7 @@ class OptionsView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
 
@@ -208,7 +208,7 @@ class ArsenalView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
-    def __init__(self, main_frame: Frame):
+    def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
 
