@@ -107,8 +107,8 @@ class MenuView(View):
         self.btn_height = 200
         self.logo_width = 600
         self.logo_height = 200
-        self.background_width = 1204
-        self.background_height = 804
+        self.background_width = 1200
+        self.background_height = 800
 
         self.background_img = self.img_resize(
             "Graphics/background.gif",(self.background_width,self.background_height)
@@ -131,29 +131,33 @@ class MenuView(View):
         self.quit_img = self.img_resize(
             "Graphics/quit.png",(self.btn_width,self.btn_height)
         )
-        self.main_canvas = BetterCanvas(self.main_frame,0.5,0.5,width=self.background_width,height=self.background_height)
+        self.main_canvas = BetterCanvas(self.main_frame,0.5,0.5,width=self.background_width,height=self.background_height,highlightthickness = 0)
         self.background = self.main_canvas.create_image(
             self.background_width/2,self.background_height/2,
             image = self.background_img
             )
+        self.logo =  self.main_canvas.create_image(
+            self.background_width/2,self.logo_height/2,
+            image = self.logo_img
+            )
         self.play_button =  self.main_canvas.create_image(
-            self.btn_width/2,self.btn_height/2,
+            self.background_width*0.25,self.background_height*0.4,
             image = self.play_img
             )
         self.arsenal_button =  self.main_canvas.create_image(
-            self.btn_width/2,self.btn_height/2,
+            self.background_width*0.75,self.background_height*0.4,
             image = self.arsenal_img
             )
         self.options_button =  self.main_canvas.create_image(
-            self.btn_width/2,self.btn_height/2,
+            self.background_width*0.25,self.background_height*0.6,
             image = self.options_img
             )
         self.highscores_button =  self.main_canvas.create_image(
-            self.btn_width/2,self.btn_height/2,
+            self.background_width*0.75,self.background_height*0.6,
             image = self.highscores_img
             )
         self.quit_button =  self.main_canvas.create_image(
-            self.btn_width/2,self.btn_height/2,
+            self.background_width*0.5,self.background_height*0.8,
             image = self.quit_img
             )
 
