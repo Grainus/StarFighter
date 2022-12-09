@@ -61,7 +61,6 @@ class Controller(ABC):
     def start(self):
         """Lancement du controlleur"""
         self.view.draw()
-        self.bind_base_buttons()
 
     def quit_game(self):
         """Fermeture du jeu"""
@@ -72,28 +71,6 @@ class Controller(ABC):
         self.view.destroy()
         self.root.controller = change_to(self.root)
         self.view.draw()
-
-    def bind_base_buttons(self):
-        # If present, bind the quit_button, the start_game button and the options button as well as the highscore button
-        if hasattr(self.view, "quit_button"):
-            self.view.quit_button.bind("<Button-1>",
-                                       lambda event: self.quit_game())
-
-        if hasattr(self.view, "start_game_button"):
-            self.view.start_game_button.bind("<Button-1>",
-                                             lambda event: self.change_controller(GameController))
-
-        if hasattr(self.view, "options_button"):
-            self.view.options_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(OptionsController))
-
-        if hasattr(self.view, "highscore_button"):
-            self.view.highscore_button.bind("<Button-1>",
-                                            lambda event: self.change_controller(HighscoreController))
-
-        if hasattr(self.view, "arsenal_button"):
-            self.view.arsenal_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(ArsenalController))
 
 
 class MenuController(Controller):
@@ -122,19 +99,12 @@ class GameController(Controller):
         super().__init__(root)
         self.view = GameView(self.main_frame)
 
-        self.player = self.view.canvas.create_rectangle(0, 0, 10, 10, fill="red")
-
-        self.ennemyArray = []
-        self.bulletArray = []
-        self.objectArray = []
-
         self.bind_mouse_pregame()
 
     def initalize_game(self):
         """Initialisation du jeu"""
         # TODO: Config.get_instant()
         self.bind_mouse_game()
-        self.move_ennemy()
 
     def bind_mouse_pregame(self):
         """Bind les boutons de la souris avant le début du jeu"""
@@ -153,18 +123,9 @@ class GameController(Controller):
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
-        self.bulletArray.append(self.view.canvas.create_rectangle(event.x, event.y, event.x + 10, event.y + 10, fill="blue"))
 
     def mouse_listener_right_click(self, event):
         """Création d'un ennemi"""
-        self.ennemyArray.append(self.view.canvas.create_rectangle(event.x, event.y, event.x + 10, event.y + 10, fill="green"))
-
-    def move_ennemy(self):
-        """Déplacement des ennemis"""
-        for ennemy in self.ennemyArray:
-            self.view.canvas.move(ennemy, 100, 100)
-        self.root.after(100, self.move_ennemy)
-
 
 class ArsenalController(Controller):
     """Controlleur de l'arsenal

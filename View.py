@@ -32,7 +32,6 @@ Classe:
 
 from Container import BetterButton, BetterLabel, BetterFrame, BetterCanvas
 from abc import ABC
-from typing import TYPE_CHECKING
 
 
 class View(ABC):
@@ -77,20 +76,6 @@ class MenuView(View):
     """
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
-        print(self.main_frame)
-
-        self.title = BetterLabel(self.main_frame, 0.5, 0.05, text="StarFighter",
-                                 font=("Arial", 50))
-
-        self.buttonContainer = BetterFrame(self.main_frame, 0.5, 0.9)
-
-        self.buttonContainer.config(width=800, height=150)
-        self.buttonContainer.config(highlightbackground="black",
-                                    highlightthickness=1)
-
-        self.start_game_button = BetterButton(self.buttonContainer, 0.5, 0.5,
-                                                text="Jouer", font=("Arial", 20))
-        self.start_game_button.config(width=10, height=2)
 
     def draw(self):
         """Méthode de lancement de la vue"""
