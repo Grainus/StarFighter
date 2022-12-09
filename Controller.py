@@ -70,7 +70,7 @@ class Controller(ABC):
         """Changement de controlleur"""
         self.view.destroy()
         self.root.controller = change_to(self.root)
-        self.view.draw()
+        self.root.controller.start()
 
 
 class MenuController(Controller):
@@ -132,6 +132,9 @@ class GameController(Controller):
         self.view = GameView(self.main_frame)
 
         self.bind_mouse_pregame()
+
+    def start(self):
+        super().start()
 
     def initalize_game(self):
         """Initialisation du jeu"""
