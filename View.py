@@ -29,10 +29,10 @@ Classe:
     - optionsView : Classe de la vue des options
     - ArsenalView : Classe de la vue de l'arsenal
 """
-
-from Container import BetterCanvas
-from tkinter import Frame, PhotoImage
+from Container import BetterCanvas, BetterFrame, BetterLabel, BetterButton
+from tkinter import PhotoImage
 from PIL import Image, ImageTk
+from abc import ABC
 
 
 class View(ABC):
@@ -172,12 +172,13 @@ class GameView(View):
     """
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
-        self.canvas = BetterCanvas(self.main_frame)
-        self.canvas.config(bg="black")
+        self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5)
+        self.canvas.config(bg="black", width=1200, height=800)
 
     def draw(self):
         """Méthode de lancement de la vue"""
-        super(GameView, self).draw()
+        self.canvas.place(relx=0.5, rely=0.5, anchor="center")
+
 
 
 class HighscoreView(View):
