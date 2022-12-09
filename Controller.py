@@ -31,18 +31,11 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
-import tkinter as tk
+from tkinter import Tk
 from Container import BetterFrame
 from abc import ABC  # Classe abstraite
 
-from View import (
-    View,
-    MenuView,
-    GameView,
-    HighscoreView,
-    OptionsView,
-    ArsenalView
-)
+from View import MenuView, GameView, HighscoreView, OptionsView, ArsenalView
 
 
 class Controller(ABC):
@@ -54,7 +47,7 @@ class Controller(ABC):
     :param self.view: Vue associée au controlleur
     """
 
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: Tk):
         self.root = root
         """En quelque sorte, il s'agit de la fenêtre principale du jeu
         qui est aussi responsable de sa boucle principale."""
@@ -62,7 +55,7 @@ class Controller(ABC):
         self.main_frame = BetterFrame(root, 0, 0)
         """Frame principale du jeu. Elle contient toutes les autres frames"""
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.view: View
+        self.view = None
         """Vue associée au controlleur"""
 
     def start(self):
@@ -89,7 +82,8 @@ class MenuController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk.Tk):
+
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = MenuView(self.main_frame)
 
@@ -132,7 +126,8 @@ class GameController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk.Tk):
+
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = GameView(self.main_frame)
 
@@ -177,7 +172,8 @@ class ArsenalController(Controller):
     :param self.view: Vue associée au controlleur
 
     """
-    def __init__(self, root: tk.Tk):
+
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = ArsenalView(self.main_frame)
 
@@ -191,7 +187,8 @@ class HighscoreController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk.Tk):
+
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
 
@@ -205,6 +202,7 @@ class OptionsController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk.Tk):
+    
+    def __init__(self, root: Tk):
         super().__init__(root)
         self.view = OptionsView(self.main_frame)

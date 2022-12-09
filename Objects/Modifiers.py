@@ -17,36 +17,29 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
-from abc import ABC
-
-from Object import Object
+import Object
 
 
-class Modifiers(Object, ABC):
+class Modifiers(Object):
     """Classe abstaite des modificateurs de vaisseau"""
-    def __init__(self):
-        raise NotImplementedError
+    raise NotImplementedError
 
 
 class UraniumRod(Modifiers):
     """Modificateur de vaisseau: Uranium Rod"""
-    def __init__(self):
-        raise NotImplementedError
+    raise NotImplementedError
 
 
 class Shield(Modifiers):
     """Modificateur de vaisseau: Bouclier"""
-    def __init__(self):
-        raise NotImplementedError
+    raise NotImplementedError
 
 
 class Weapons(Modifiers):
     """Modificateur de vaisseau: Armes"""
-    def __init__(self):
-        raise NotImplementedError
+    raise NotImplementedError
 
 
 class Torch(Modifiers):
     """Modificateur de vaisseau: Torche"""
-    def __init__(self):
-        raise NotImplementedError
+    raise NotImplementedError
