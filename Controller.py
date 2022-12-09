@@ -71,28 +71,6 @@ class Controller(ABC):
         self.root.controller = change_to(self.root)
         self.root.controller.draw()
 
-    def bind_base_buttons(self):
-        # If present, bind the quit_button, the start_game button and the options button
-        if hasattr(self.view, "quit_button"):
-            self.view.quit_button.bind("<Button-1>",
-                                       lambda event: self.quit_game())
-
-        if hasattr(self.view, "start_game_button"):
-            self.view.play_button.bind("<Button-1>",
-                                             lambda event: self.change_controller(GameController))
-
-        if hasattr(self.view, "options_button"):
-            self.view.options_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(OptionsController))
-
-        if hasattr(self.view, "highscore_button"):
-            self.view.highscores_button.bind("<Button-1>",
-                                            lambda event: self.change_controller(HighscoreController))
-
-        if hasattr(self.view, "arsenal_button"):
-            self.view.arsenal_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(ArsenalController))
-
 
 class MenuController(Controller):
     """Controlleur du menu principal
