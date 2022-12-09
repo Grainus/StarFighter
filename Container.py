@@ -24,7 +24,6 @@ Il contient les classes suivantes:
     - Container
     - BetterLabel
 """
-
 from tkinter import Frame, Label, Button, Canvas
 
 
@@ -132,8 +131,15 @@ class BetterFrame(Frame):
         self.x = x
         self.y = y
 
+    """Classe représentant une canvas tkinter modifié pour le programme.
+    Elle hérite de la classe tkinter.Canvas.
 
-class BetterCanvas(Canvas):
-    def __init__(self, master, **kwargs):
+    :param master: Le parent du canvas.
+    :param x: La position x du canvas.
+    :param y: La position y du canvas.
+    :param kwargs: Les arguments de la classe tkinter.Canvas.
+    """
+    def __init__(self, master, x: float, y: float, **kwargs):
         super().__init__(master, **kwargs)
-        self.pack(expand=True, fill="both")
+        self.x = x
+        self.y = y
