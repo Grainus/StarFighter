@@ -50,6 +50,5 @@ if __name__ == "__main__":
     
     Lancement du jeu en créant une instance de Root et en lançant"""
     root = Root()
-
     root.controller.start()
     root.mainloop()

@@ -24,8 +24,7 @@ Il contient les classes suivantes:
     - Container
     - BetterLabel
 """
-
-from tkinter import Frame as Frame, Label as Label, Button as Button
+from tkinter import Frame, Label, Button, Canvas
 
 
 class BetterButton(Button):
@@ -126,6 +125,21 @@ class BetterFrame(Frame):
     ... (voir la documentation de tkinter.Frame pour plus d’informations)
 
     :return: Un frame tkinter modifié pour le programme.
+    """
+    def __init__(self, master, x: float, y: float, **kwargs):
+        super().__init__(master, **kwargs)
+        self.x = x
+        self.y = y
+
+
+class BetterCanvas(Canvas):
+    """Classe représentant une canvas tkinter modifié pour le programme.
+    Elle hérite de la classe tkinter.Canvas.
+
+    :param master: Le parent du canvas.
+    :param x: La position x du canvas.
+    :param y: La position y du canvas.
+    :param kwargs: Les arguments de la classe tkinter.Canvas.
     """
     def __init__(self, master, x: float, y: float, **kwargs):
         super().__init__(master, **kwargs)
