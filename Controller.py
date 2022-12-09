@@ -60,7 +60,6 @@ class Controller(ABC):
     def start(self):
         """Lancement du controlleur"""
         self.view.draw()
-        self.bind_base_buttons()
 
     def quit_game(self):
         """Fermeture du jeu"""

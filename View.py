@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING
 import os.path
 from PIL import Image, ImageTk
 
+
 class View:
     """Classe abstraite de la vue
 
@@ -155,10 +156,6 @@ class MenuView(View):
             self.btn_width/2,self.btn_height/2,
             image = self.quit_img
             )
-
-        
-
-        
 
     def draw(self):
         """Méthode de lancement de la vue"""
