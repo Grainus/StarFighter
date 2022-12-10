@@ -27,6 +27,7 @@ from Objects.Object import Object
 from Objects.Alien import Alien
 from Objects.Modifiers import Modifiers
 from Objects.Vaisseau import Vaisseau
+from Objects.Position import Point
 
 
 ObjT1 = TypeVar("ObjT1", bound=Object)
@@ -54,27 +55,26 @@ class Model(ABC):
 
 
 
-class GameModel(Model):
+class GameModel:
     """Contient la logique et l'état d'une partie en cours."""
 
     def __init__(self, difficulty: Difficulty):
-        super().__init__()
         self.difficulty = difficulty
-        self.player = Vaisseau()
+        self.player = Vaisseau(Point(590, 750))
         self.enemies: list[Alien] = []
         self.sprites: list[Object] = []
         self.stats = GameStats()
 
     @overload
     def get_collisions(
-            self, instance: Object, cls: Type[ObjT1]
+            self, arg: Object, cls: Type[ObjT1]
     ) -> list[ObjT1]: ...
 
     @overload
     def get_collisions(
-            self, cls1: Type[ObjT1], cls2: Type[ObjT2]
+            self, arg: Type[ObjT1], cls: Type[ObjT2]
     ) -> list[tuple[ObjT1, ObjT2]]: ...
-    
+
     def get_collisions(
             self, arg: Object | Type[ObjT1], cls: Type[ObjT2]
     ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]]:

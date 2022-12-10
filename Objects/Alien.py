@@ -20,7 +20,7 @@
 
 from abc import ABC
 
-from Object import Object
+from .Object import Object
 
 class Alien(Object, ABC):
     """Classe abstraite pour les aliens"""

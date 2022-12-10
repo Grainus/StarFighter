@@ -45,7 +45,8 @@ from View import (
     OptionsView,
     ArsenalView
 )
-
+from Model import GameModel, Difficulty
+from Objects.Position import Point
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -136,8 +137,9 @@ class GameController(Controller):
     """
     def __init__(self, root: tk.Tk):
         super().__init__(root)
-        self.eventPos = (0,0)
+        self.eventPos = (0, 0)
         self.view = GameView(self.main_frame)
+        self.game = GameModel(Difficulty.NORMAL)
         self.bind_mouse_pregame()
 
     def start(self):
@@ -185,19 +187,12 @@ class GameController(Controller):
 
     def player_movement(self):
         """Déplacement du joueur"""
-        playerX = self.view.canvas.coords(self.view.player)[0]
-        playerY = self.view.canvas.coords(self.view.player)[1]
-        speed = 10
-
-        if self.eventPos[0] - playerX > speed:
-            self.view.canvas.move(self.view.player, speed, 0)
-        elif self.eventPos[0] - playerX < -speed:
-            self.view.canvas.move(self.view.player, -speed, 0)
-        if self.eventPos[1] - playerY > speed:
-            self.view.canvas.move(self.view.player, 0, speed)
-        elif self.eventPos[1] - playerY < -speed:
-            self.view.canvas.move(self.view.player, 0, -speed)
-
+        destination = Point(*self.eventPos)
+        player = self.game.player  # Simpler alias
+        destination.x -= player.dimension.width / 2
+        destination.y -= player.dimension.height / 2
+        player.move_to(destination)
+        self.view.canvas.moveto(self.view.player, *player.position)
 
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""

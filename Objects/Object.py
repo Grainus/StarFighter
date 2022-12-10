@@ -20,7 +20,7 @@
 from __future__ import annotations
 from abc import ABC
 
-from Position import Vecteur, Point, Dimension2D
+from .Position import Vecteur, Point, Dimension2D
 
 class Object(ABC):
     """Classe abstraite représentant un objet du jeu quel qu'il soit."""

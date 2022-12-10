@@ -84,9 +84,11 @@ class Vecteur(complex):
         """
         return abs(self)
 
-    @norme.setter
-    def norme(self, value: float) -> None:
-        self *= value / self.norme
+    def asnorm(self, value: float):
+        """Retourne un nouveau vecteur avec la norme spécifiée et la
+        même direction.
+        """
+        return self.__class__(*(self * value / self.norme))
 
     def unitaire(self) -> Self:
         """Retourne un vecteur unitaire dans la direction du vecteur."""

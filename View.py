@@ -186,7 +186,6 @@ class GameView(View):
         self.bullet_width = 50
         self.bullet_height = 50
 
-
         self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
                                         width=self.background_width,
                                         height=self.background_height,
