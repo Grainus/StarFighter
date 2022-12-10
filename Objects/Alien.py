@@ -21,28 +21,15 @@
 from abc import ABC
 
 from .Object import Object
+from .Position import Vecteur, Point
+
+ALIENTYPES = (1, 2, 3, 4, 5)
 
 class Alien(Object, ABC):
     """Classe abstraite pour les aliens"""
-    def __init__(self):
-        raise NotImplementedError
-
-
-class Alien1(Alien):
-    """Classe pour les aliens de type 1"""
-    def __init__(self):
-        super().__init__()
-
-class Alien2(Alien):
-    """Classe pour les aliens de type 2"""
-    def __init__(self):
-        super().__init__()
-
-
-class Alien3(Alien):
-    """Classe pour les aliens de type 3"""
-    def __init__(self):
-        super().__init__()
+    def __init__(self, position: Point):
+        super().__init__(position, width=50, height=50)
+        self.velocity = Vecteur(0, 10)
 
 
 class Boss(Alien):

@@ -174,7 +174,6 @@ class GameView(View):
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
-        self.aliens = []
         self.player = None
         self.bullet = []
         self.asteroids = []
@@ -240,12 +239,15 @@ class GameView(View):
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
         super(GameView, self).draw()
 
-    def spawnPlayer(self, x, y):
+    def spawnPlayer(self, x, y) -> int:
         self.player = self.canvas.create_image(x, y, image=self.player_img)
+        return self.player
 
-    def spawnAlien(self, alien_type: int, x, y):
-        self.aliens.append(
-            self.canvas.create_image(x, y, image=self.aliensType[alien_type]))
+    def spawnAlien(self, alien_type: int, x, y) -> int:
+        return self.canvas.create_image(
+                x, y,
+                image=self.aliensType[alien_type]
+        )
     
     def spawnBullet(self, x, y):
         self.bullet.append(self.canvas.create_image
@@ -256,7 +258,7 @@ class GameView(View):
             self.canvas.create_image(x, y, image=self.asteroid_img))
 
     def moveSprite(self, sprite, x, y):
-        self.canvas.move(sprite, x, y)
+        self.canvas.moveto(sprite, x, y)
 
     def deleteSprite(self, sprite):
         self.canvas.delete(sprite)

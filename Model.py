@@ -22,6 +22,7 @@ from typing import overload, Type, TypeVar, Any
 
 from dataclasses import dataclass
 from enum import Enum
+import random
 
 from Objects.Object import Object
 from Objects.Alien import Alien
@@ -113,9 +114,16 @@ class GameModel:
         for obj in self.sprites:
             obj.update()
 
-    def start_wave(self, *args):
+    def start_wave(self) -> list[Alien]:
         """Débute une vague d'ennemis"""
-        raise NotImplementedError
+        out: list[Alien] = []
+        for _ in range(random.randint(5, 10)):
+            alien = Alien(
+                    Point(random.random()*1200, random.random()*-300)
+            )
+            self.enemies.append(alien)
+            out.append(alien)
+        return out
 
 
 class HighscoreModel(Model):

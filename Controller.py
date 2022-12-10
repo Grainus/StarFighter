@@ -32,7 +32,7 @@ from __future__ import annotations
 
 # Importation des modules standards
 
-from random import random
+from random import random, choice
 import tkinter as tk
 from Container import BetterFrame
 from abc import ABC  # Classe abstraite
@@ -47,6 +47,7 @@ from View import (
 )
 from Model import GameModel, Difficulty
 from Objects.Position import Point
+from Objects.Alien import ALIENTYPES
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -138,7 +139,7 @@ class GameController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.eventPos = (0, 0)
-        self.view = GameView(self.main_frame)
+        self.view: GameView = GameView(self.main_frame)
         self.game = GameModel(Difficulty.NORMAL)
         self.bind_mouse_pregame()
 
@@ -158,7 +159,7 @@ class GameController(Controller):
         """Bind du carré à la souris afin qu'il suive le curseur"""
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
-        self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
+        # self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
         self.view.canvas.bind("<Button-2>", self.mouse_listener_middle_click)
         self.tick()
 
@@ -170,13 +171,6 @@ class GameController(Controller):
         """Création d'un projectile"""
         player_pos = self.view.canvas.coords(self.view.player)
         self.view.spawnBullet(player_pos[0], player_pos[1])
-
-    def mouse_listener_right_click(self, event):
-        """Création d'un ennemi"""
-        # Debug ALIEN
-        # Random x from the screen width
-        randX = random() * self.view.canvas.winfo_width()
-        self.view.spawnAlien(1, randX, 0)
 
     def mouse_listener_middle_click(self, event):
         """Création d'un asteroide"""
@@ -197,6 +191,11 @@ class GameController(Controller):
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
         self.player_movement()
+        if not self.game.enemies:
+            for alien in self.game.start_wave():
+                alien.id = self.view.spawnAlien(
+                        choice(ALIENTYPES), *alien.position
+                )
 
         for bullet in self.view.bullet:
             if self.view.isVisible(bullet):
@@ -205,12 +204,14 @@ class GameController(Controller):
                 self.view.deleteSprite(bullet)
                 self.view.bullet.remove(bullet)
 
-        for alien in self.view.aliens:
-            if self.view.isVisible(alien):
-                self.view.moveSprite(alien, 0, 10)
+        for alien in self.game.enemies:
+            id = alien.id
+            if self.view.isVisible(id) or alien.position.y < 0:
+                alien.update()
+                self.view.moveSprite(id, *alien.position)
             else:
-                self.view.deleteSprite(alien)
-                self.view.aliens.remove(alien)
+                self.view.deleteSprite(id)
+                self.game.enemies.remove(alien)
 
         for asteroid in self.view.asteroids:
             if self.view.isVisible(asteroid):

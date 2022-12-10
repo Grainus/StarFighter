@@ -60,7 +60,7 @@ class Object(ABC):
 
     @speed.setter
     def speed(self, value) -> None:
-        self.velocity.norme = value
+        self.velocity = self.velocity.asnorm(value)
 
     def collides(self, other: Object) -> bool:
         """Vérifie si deux objets sont en collision"""
