@@ -144,6 +144,7 @@ class GameController(Controller):
     def bind_mouse_pregame(self):
         """Bind les boutons de la souris avant le début du jeu"""
         self.view.canvas.bind("<Button-1>", lambda event: self.initalize_game())
+        self.tick()
 
     def bind_mouse_game(self):
         """Bind du carré à la souris afin qu'il suive le curseur"""
@@ -153,14 +154,29 @@ class GameController(Controller):
 
     def mouse_listener_move(self, event):
         """Déplacement du carré"""
-        #self.view.canvas.coords(self.player, event.x, event.y, event.x + 10, event.y + 10)
         print(event.x, event.y)
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
+        self.view.spawnBullet(event.x, event.y)
 
     def mouse_listener_right_click(self, event):
         """Création d'un ennemi"""
+
+    def tick(self):
+        """Méthode appelée à chaque tick du jeu"""
+        for bullet in self.view.bullet:
+            if self.view.isVisible(bullet):
+                self.view.moveSprite(bullet, 0, -10)
+            else:
+                print("Bullet out of screen")
+                self.view.deleteSprite(bullet)
+                self.view.bullet.remove(bullet)
+
+        #60 fps
+        self.view.canvas.after(16, self.tick)
+
+
 
 class ArsenalController(Controller):
     """Controlleur de l'arsenal
