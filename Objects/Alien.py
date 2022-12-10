@@ -21,28 +21,22 @@
 from abc import ABC
 
 from Object import Object
+import config
 
-class Alien(Object, ABC):
-    """Classe abstraite pour les aliens"""
+class Enemy(Object, ABC):
+    """Classe abstraite pour les ennemis"""
     def __init__(self):
-        raise NotImplementedError
+        self.speed = 1
 
 
-class Alien1(Alien):
-    """Classe pour les aliens de type 1"""
-    def __init__(self):
-        super().__init__()
-
-class Alien2(Alien):
-    """Classe pour les aliens de type 2"""
-    def __init__(self):
-        super().__init__()
-
-
-class Alien3(Alien):
-    """Classe pour les aliens de type 3"""
-    def __init__(self):
-        super().__init__()
+class Alien(Enemy):
+    """Classe pour les OVNIS"""
+    def __init__(self, position):
+        super().__init__(
+                position,
+                width=config.ALIEN_WIDTH,
+                height=config.ALIEN_HEIGHT
+        )
 
 
 class Boss(Alien):
