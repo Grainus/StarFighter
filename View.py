@@ -47,6 +47,8 @@ class View(ABC):
 
         self.background_width = 1200
         self.background_height = 800
+        self.logo_width = 600
+        self.logo_height = 200
 
     def draw(self):
         """Méthode abstraite de lancement de la vue"""
@@ -101,8 +103,6 @@ class MenuView(View):
 
         self.btn_width = 400
         self.btn_height = 200
-        self.logo_width = 600
-        self.logo_height = 200
 
         self.background_img = self.img_format(
             "Graphics/background.gif", (self.background_width,
@@ -186,7 +186,10 @@ class GameView(View):
         self.bullet_height = 50
 
 
-        self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5)
+        self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
+                                        width=self.background_width,
+                                        height=self.background_height,
+                                        highlightthickness=0)
         self.canvas.config(bg="black", width=1200, height=800)
 
 
@@ -286,8 +289,86 @@ class OptionsView(View):
 
     :param this.main_frame: Frame principale de la vue
     """
+    
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+
+        self.btn_width = 300
+        self.btn_height = 150
+        self.btn_big_width = 400
+        self.btn_big_height = 200
+
+        self.logo_img = self.img_format(
+            "Graphics/logo.png", (self.logo_width, self.logo_height)
+        )
+        self.background_img = self.img_format(
+            "Graphics/background.gif", (self.background_width,
+                                        self.background_height)
+        )
+
+        self.easy_img = self.img_format(
+            "Graphics/easy.png", (self.btn_width,
+                                        self.btn_height)
+        )
+        self.intermediate_img = self.img_format(
+            "Graphics/intermediate.png", (self.btn_width,
+                                        self.btn_height)
+        )
+        self.hard_img = self.img_format(
+            "Graphics/hard.png", (self.btn_width,
+                                        self.btn_height)
+        )
+        self.small_img = self.img_format(
+            "Graphics/small.png", (self.btn_big_width,
+                                        self.btn_big_height)
+        )
+        self.big_img = self.img_format(
+            "Graphics/big.png", (self.btn_big_width,
+                                        self.btn_big_height)
+        )
+        self.menu_img = self.img_format(
+            "Graphics/menu.png", (self.btn_big_width,
+                                        self.btn_big_height)
+        )
+
+        self.main_canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
+                                        width=self.background_width,
+                                        height=self.background_height,
+                                        highlightthickness=0)
+        self.background = self.main_canvas.create_image(
+            self.background_width/2, self.background_height/2,
+            image=self.background_img)
+
+        self.logo = self.main_canvas.create_image(
+            self.background_width/2, self.logo_height/2,
+            image=self.logo_img)
+
+        self.easy_button = self.main_canvas.create_image(
+            self.background_width*0.25, self.background_height*0.35,
+            image=self.easy_img)
+
+        self.intermediate_button = self.main_canvas.create_image(
+            self.background_width*0.5, self.background_height*0.35,
+            image=self.intermediate_img)
+
+        self.hard_button = self.main_canvas.create_image(
+            self.background_width*0.75, self.background_height*0.35,
+            image=self.hard_img)
+
+        self.small_button = self.main_canvas.create_image(
+            self.background_width*0.33, self.background_height*0.55,
+            image=self.small_img)
+
+        self.big_button = self.main_canvas.create_image(
+            self.background_width*0.66, self.background_height*0.55,
+            image=self.big_img)
+        
+        self.menu_button = self.main_canvas.create_image(
+            self.background_width*0.5, self.background_height*0.75,
+            image=self.menu_img)
+
+
+
 
 
 class ArsenalView(View):
