@@ -157,6 +157,7 @@ class GameController(Controller):
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
         self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
+        self.view.canvas.bind("<Button-2>", self.mouse_listener_middle_click)
         self.tick()
 
     def mouse_listener_move(self, event):
@@ -175,13 +176,18 @@ class GameController(Controller):
         randX = random() * self.view.canvas.winfo_width()
         self.view.spawnAlien(1, randX, 0)
 
+    def mouse_listener_middle_click(self, event):
+        """Création d'un asteroide"""
+        # Debug ASTEROID
+        # Random x from the screen width
+        randX = random() * self.view.canvas.winfo_width()
+        self.view.spawnAsteroid(randX, 0)
+
     def player_movement(self):
         """Déplacement du joueur"""
         playerX = self.view.canvas.coords(self.view.player)[0]
         playerY = self.view.canvas.coords(self.view.player)[1]
         speed = 10
-
-
 
         if self.eventPos[0] - playerX > speed:
             self.view.canvas.move(self.view.player, speed, 0)
@@ -210,6 +216,13 @@ class GameController(Controller):
             else:
                 self.view.deleteSprite(alien)
                 self.view.aliens.remove(alien)
+
+        for asteroid in self.view.asteroids:
+            if self.view.isVisible(asteroid):
+                self.view.moveSprite(asteroid, 0, 10)
+            else:
+                self.view.deleteSprite(asteroid)
+                self.view.asteroids.remove(asteroid)
 
 
         #60 fps

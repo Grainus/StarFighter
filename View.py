@@ -177,6 +177,7 @@ class GameView(View):
         self.aliens = []
         self.player = None
         self.bullet = []
+        self.asteroids = []
 
         self.player_width = 100
         self.player_height = 100
@@ -191,13 +192,10 @@ class GameView(View):
                                         height=self.background_height,
                                         highlightthickness=0)
         self.canvas.config(bg="black", width=1200, height=800)
-
-
         
         self.background_img = self.img_format(
             "Graphics/background.gif", (self.background_width,
-                                        self.background_height)
-        )
+                                        self.background_height))
 
         self.player_img = self.img_format(
             "Graphics/player.png", (self.player_width, self.player_height)
@@ -236,7 +234,7 @@ class GameView(View):
             self.background_width/2, self.background_height/2,
             image=self.background_img)
 
-        self.spawnPlayer(590,750)
+        self.spawnPlayer(590, 750)
 
     def draw(self):
         """Méthode de lancement de la vue"""
@@ -246,22 +244,24 @@ class GameView(View):
     def spawnPlayer(self, x, y):
         self.player = self.canvas.create_image(x, y, image=self.player_img)
 
-    def spawnAlien(self,alien_type:int,x,y):
+    def spawnAlien(self, alien_type: int, x, y):
         self.aliens.append(
             self.canvas.create_image(x, y, image=self.aliensType[alien_type]))
     
-    def spawnBullet(self,x,y):
+    def spawnBullet(self, x, y):
         self.bullet.append(self.canvas.create_image
                            (x, y, image=self.bullet_img))
 
-    def spawnAsteroid(self,x,y):
-        self.asteroid = self.canvas.create_image(x,y,image = self.asteroid_img)
+    def spawnAsteroid(self, x, y):
+        self.asteroids.append(
+            self.canvas.create_image(x, y, image=self.asteroid_img))
 
     def moveSprite(self, sprite, x, y):
         self.canvas.move(sprite, x, y)
 
     def deleteSprite(self, sprite):
         self.canvas.delete(sprite)
+
     def isVisible(self, sprite):
         # If the sprite is not visible (out of the window), return False
         x, y= self.canvas.coords(sprite)
