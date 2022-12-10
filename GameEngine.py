@@ -21,7 +21,8 @@
 
 Ce module contient la classe Root qui est la fenêtre principale du jeu.
 Elle est aussi responsable de lancer le controlleur de menu et de lancer
-la boucle principale du jeu."""
+la boucle principale du jeu.
+"""
 
 import tkinter as tk
 
@@ -48,7 +49,8 @@ class Root(tk.Tk):
 if __name__ == "__main__":
     """Lancement du jeu
     
-    Lancement du jeu en créant une instance de Root et en lançant"""
+    Lancement du jeu en créant une instance de Root et en lançant
+    """
     root = Root()
     root.controller.start()
     root.mainloop()

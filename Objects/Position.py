@@ -18,7 +18,7 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from __future__ import annotations
-from typing import overload, Self, Iterator, Any
+from typing import overload, Iterator, Any
 
 import math
 import cmath
@@ -35,46 +35,46 @@ class Vecteur(complex):
             return NotImplemented
         return cmath.isclose(self, other)
 
-    def __add__(self, *args, **kwargs) -> Self:
+    def __add__(self, *args, **kwargs):
         return self.__class__(super().__add__(*args, **kwargs))
 
-    def __sub__(self, *args, **kwargs) -> Self:
+    def __sub__(self, *args, **kwargs):
         return self.__class__(super().__sub__(*args, **kwargs))
 
-    def __mul__(self, *args, **kwargs) -> Self:
+    def __mul__(self, *args, **kwargs):
         return self.__class__(super().__mul__(*args, **kwargs))
 
-    def __pow__(self, *args, **kwargs) -> Self:
+    def __pow__(self, *args, **kwargs):
         return self.__class__(super().__pow__(*args, **kwargs))
 
-    def __truediv__(self, *args, **kwargs) -> Self:
+    def __truediv__(self, *args, **kwargs):
         return self.__class__(super().__truediv__(*args, **kwargs))
 
-    def __radd__(self, *args, **kwargs) -> Self:
+    def __radd__(self, *args, **kwargs):
         return self.__class__(super().__radd__(*args, **kwargs))
 
-    def __rsub__(self, *args, **kwargs) -> Self:
+    def __rsub__(self, *args, **kwargs):
         return self.__class__(super().__rsub__(*args, **kwargs))
 
-    def __rmul__(self, *args, **kwargs) -> Self:
+    def __rmul__(self, *args, **kwargs):
         return self.__class__(super().__rmul__(*args, **kwargs))
 
-    def __rpow__(self, *args, **kwargs) -> Self:
+    def __rpow__(self, *args, **kwargs):
         return self.__class__(super().__rpow__(*args, **kwargs))
 
-    def __rtruediv__(self, *args, **kwargs) -> Self:
+    def __rtruediv__(self, *args, **kwargs):
         return self.__class__(super().__rtruediv__(*args, **kwargs))
 
-    def __neg__(self, *args, **kwargs) -> Self:
+    def __neg__(self, *args, **kwargs):
         return self.__class__(super().__neg__(*args, **kwargs))
 
-    def __pos__(self, *args, **kwargs) -> Self:
+    def __pos__(self, *args, **kwargs):
         return self.__class__(super().__pos__(*args, **kwargs))
 
     def __iter__(self) -> Iterator:
         return iter(self.get_coordonnee())
 
-    def conjugate(self) -> Self:
+    def conjugate(self):
         return self.__class__(super().conjugate())
 
     @property
@@ -90,11 +90,11 @@ class Vecteur(complex):
         """
         return self.__class__(*(self * value / self.norme))
 
-    def unitaire(self) -> Self:
+    def unitaire(self):
         """Retourne un vecteur unitaire dans la direction du vecteur."""
         return self / self.norme
     
-    def rotate(self, angle: float) -> Self:
+    def rotate(self, angle: float):
         """Retourne un vecteur avec une rotation appliquée."""
         return self * complex(math.cos(angle), math.sin(angle))
 
@@ -103,27 +103,27 @@ class Vecteur(complex):
         return (self.real, self.imag)
 
     @classmethod
-    def zero(cls) -> Self:
+    def zero(cls):
         """Retourne un vecteur nul."""
         return cls(0, 0)
 
     @classmethod
-    def gauche(cls) -> Self:
+    def gauche(cls):
         """Retourne un vecteur unitaire vers la gauche (x = -1)."""
         return cls(-1, 0)
 
     @classmethod
-    def droite(cls) -> Self:
+    def droite(cls):
         """Retourne un vecteur unitaire vers la droite (x = 1)."""
         return cls(1, 0)
 
     @classmethod
-    def haut(cls) -> Self:
+    def haut(cls):
         """Retourne un vecteur unitaire vers le haut (y = -1)."""
         return cls(0, -1)
 
     @classmethod
-    def bas(cls) -> Self:
+    def bas(cls):
         """Retourne un vecteur unitaire vers le bas (y = 1)."""
         return cls(0, 1)
 
@@ -147,7 +147,7 @@ class Point:
 
         return self.x == other.x and self.y == other.y
 
-    def __add__(self, vecteur: Any) -> Self:
+    def __add__(self, vecteur: Any):
         """Additionne le vecteur au point (translation)."""
         if not isinstance(vecteur, complex):
             return NotImplemented
@@ -157,9 +157,9 @@ class Point:
     def __sub__(self, other: Point) -> Vecteur: ...
 
     @overload
-    def __sub__(self, other: Vecteur) -> Self: ...
+    def __sub__(self, other: Vecteur) -> Point: ...
 
-    def __sub__(self, other: Any) -> Self | Vecteur:
+    def __sub__(self, other: Any) -> Point | Vecteur:
         """Calcule la soustraction selon un autre point ou vecteur.
         Returns:
             Si other est un Point, un Vecteur avec le déplacement.
@@ -175,7 +175,7 @@ class Point:
     def __iter__(self) -> Iterator:
         return iter(self.get_coordonnee())
 
-    def distance(self, other: Self) -> float:
+    def distance(self, other: Point) -> float:
         """Calcule la distance entre deux points."""
         return math.dist(self.get_coordonnee(), other.get_coordonnee())
 
@@ -194,7 +194,7 @@ class Dimension2D(Vecteur):
     """Représente une taille en 2 dimensions."""
     def to_points(
             self,
-            origin: Point | None = Point(0, 0),
+            origin: Point = Point(0, 0),
             fromcenter: bool | None = None
     ) -> tuple[Point, Point]:
         if fromcenter:
