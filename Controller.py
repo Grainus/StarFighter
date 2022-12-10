@@ -31,6 +31,7 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
+from random import random
 from tkinter import Tk
 from Container import BetterFrame
 from abc import ABC  # Classe abstraite
@@ -163,6 +164,10 @@ class GameController(Controller):
 
     def mouse_listener_right_click(self, event):
         """Création d'un ennemi"""
+        # Debug ALIEN
+        # Random x from the screen width
+        randX = random() * self.view.canvas.winfo_width()
+        self.view.spawnAlien(1, randX, 0)
 
     def player_movement(self):
         """Déplacement du joueur"""
@@ -185,12 +190,20 @@ class GameController(Controller):
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
         self.player_movement()
+
         for bullet in self.view.bullet:
             if self.view.isVisible(bullet):
                 self.view.moveSprite(bullet, 0, -10)
             else:
                 self.view.deleteSprite(bullet)
                 self.view.bullet.remove(bullet)
+
+        for alien in self.view.aliens:
+            if self.view.isVisible(alien):
+                self.view.moveSprite(alien, 0, 10)
+            else:
+                self.view.deleteSprite(alien)
+                self.view.aliens.remove(alien)
 
 
         #60 fps
