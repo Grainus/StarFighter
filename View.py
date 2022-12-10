@@ -29,8 +29,8 @@ Classe:
     - optionsView : Classe de la vue des options
     - ArsenalView : Classe de la vue de l'arsenal
 """
-from Container import BetterCanvas, BetterFrame, BetterLabel, BetterButton
-from tkinter import PhotoImage
+from Container import BetterCanvas, BetterFrame, BetterLabel, BetterButton, BetterListbox
+from tkinter import PhotoImage,Scrollbar
 from PIL import Image, ImageTk
 from abc import ABC
 
@@ -191,6 +191,7 @@ class GameView(View):
                                         width=self.background_width,
                                         height=self.background_height,
                                         highlightthickness=0)
+
         self.canvas.config(bg="black", width=1200, height=800)
         
         self.background_img = self.img_format(
@@ -218,6 +219,9 @@ class GameView(View):
         )
         self.bullet_img = self.img_format(
             "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
+        )
+        self.bullet_alien_img = self.img_format(
+            "Graphics/bulletAlien.png", (self.bullet_width, self.bullet_height)
         )
         self.asteroid_img = self.img_format(
             "Graphics/asteroid.png", (self.bullet_width, self.bullet_height)
@@ -252,6 +256,10 @@ class GameView(View):
         self.bullet.append(self.canvas.create_image
                            (x, y, image=self.bullet_img))
 
+    def spawnBulletAlien(self, x, y):
+        self.bullet.append(self.canvas.create_image
+                           (x, y, image=self.bullet_alien_img))
+
     def spawnAsteroid(self, x, y):
         self.asteroids.append(
             self.canvas.create_image(x, y, image=self.asteroid_img))
@@ -280,6 +288,53 @@ class HighscoreView(View):
     """
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+
+        self.btn_width = 400
+        self.btn_height = 200
+        
+        self.logo_img = self.img_format(
+            "Graphics/logo.png", (self.logo_width, self.logo_height)
+        )
+
+        self.background_img = self.img_format(
+            "Graphics/background.gif", (self.background_width,
+                                        self.background_height)
+        )
+
+        self.menu_img = self.img_format(
+            "Graphics/menu.png", (self.btn_width,
+                                        self.btn_height)
+        )
+
+        self.main_canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
+                                        width=self.background_width,
+                                        height=self.background_height,
+                                        highlightthickness=0)
+
+        self.background = self.main_canvas.create_image(
+            self.background_width/2, self.background_height/2,
+            image=self.background_img)
+
+        
+        self.logo = self.main_canvas.create_image(
+            self.background_width/2, self.logo_height/2,
+            image=self.logo_img)
+
+        self.menu_button = self.main_canvas.create_image(
+            self.background_width*0.5, self.background_height*0.85,
+            image=self.menu_img)
+        
+        for i in range(10):
+            self.text = str(i+1)+": score quelquechose"
+            self.main_canvas.create_text(
+                self.background_width /2,
+                self.logo_height + ((self.background_height/20) * i),
+                text=self.text,
+                font="Fixedsys 20 bold",fill="white"
+            )
+
+
+
 
 
 class OptionsView(View):
@@ -342,6 +397,11 @@ class OptionsView(View):
         self.logo = self.main_canvas.create_image(
             self.background_width/2, self.logo_height/2,
             image=self.logo_img)
+        
+        self.difficulty_title = self.main_canvas.create_text(
+            self.background_width/2, self.background_height*0.25,
+            text = "Difficulty :", font="Fixedsys 30 bold",fill="white")
+
 
         self.easy_button = self.main_canvas.create_image(
             self.background_width*0.25, self.background_height*0.35,
@@ -355,16 +415,20 @@ class OptionsView(View):
             self.background_width*0.75, self.background_height*0.35,
             image=self.hard_img)
 
+        self.difficulty_title = self.main_canvas.create_text(
+            self.background_width/2, self.background_height*0.50,
+            text = "Resolution :", font="Fixedsys 30 bold",fill="white")
+
         self.small_button = self.main_canvas.create_image(
-            self.background_width*0.33, self.background_height*0.55,
+            self.background_width*0.33, self.background_height*0.60,
             image=self.small_img)
 
         self.big_button = self.main_canvas.create_image(
-            self.background_width*0.66, self.background_height*0.55,
+            self.background_width*0.66, self.background_height*0.60,
             image=self.big_img)
         
         self.menu_button = self.main_canvas.create_image(
-            self.background_width*0.5, self.background_height*0.75,
+            self.background_width*0.5, self.background_height*0.85,
             image=self.menu_img)
 
 
