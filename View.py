@@ -70,7 +70,7 @@ class View(ABC):
         self.main_frame.pack_forget()
 
     @staticmethod
-    def img_resize(file: str, dimensions: tuple[int, int]) -> PhotoImage:
+    def img_format(file: str, dimensions: tuple[int, int]) -> PhotoImage:
         img = Image.open(file)
         img = img.resize(dimensions)
         img = img.convert('RGBA')
@@ -103,26 +103,26 @@ class MenuView(View):
         self.background_width = 1200
         self.background_height = 800
 
-        self.background_img = self.img_resize(
+        self.background_img = self.img_format(
             "Graphics/background.gif", (self.background_width,
                                         self.background_height)
         )
-        self.logo_img = self.img_resize(
+        self.logo_img = self.img_format(
             "Graphics/logo.png", (self.logo_width, self.logo_height)
         )
-        self.play_img = self.img_resize(
+        self.play_img = self.img_format(
             "Graphics/play.png", (self.btn_width, self.btn_height)
         )
-        self.arsenal_img = self.img_resize(
+        self.arsenal_img = self.img_format(
             "Graphics/arsenal.png", (self.btn_width, self.btn_height)
         )
-        self.options_img = self.img_resize(
+        self.options_img = self.img_format(
             "Graphics/options.png", (self.btn_width, self.btn_height)
         )
-        self.highscores_img = self.img_resize(
+        self.highscores_img = self.img_format(
             "Graphics/highscores.png", (self.btn_width, self.btn_height)
         )
-        self.quit_img = self.img_resize(
+        self.quit_img = self.img_format(
             "Graphics/quit.png", (self.btn_width, self.btn_height)
         )
         self.main_canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
@@ -172,13 +172,88 @@ class GameView(View):
     """
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
+
+        self.aliens = []
+        self.player = None
+        self.bullet = []
+
+        self.player_width = 100
+        self.player_height = 100
+        self.alien_width = 50
+        self.alien_height = 50 
+        self.bullet_width = 50
+        self.bullet_height = 50
+
         self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5)
         self.canvas.config(bg="black", width=1200, height=800)
+
+        self.player_img = self.img_format(
+            "Graphics/player.png", (self.player_width, self.player_height)
+        )
+
+        self.alien1_img = self.img_format(
+            "Graphics/alien1.png", (self.alien_width, self.alien_height)
+        )
+        self.alien2_img = self.img_format(
+            "Graphics/alien2.png", (self.alien_width, self.alien_height)
+        )
+        self.alien3_img = self.img_format(
+            "Graphics/alien3.png", (self.alien_width, self.alien_height)
+        )
+        self.alien4_img = self.img_format(
+            "Graphics/alien4.png", (self.alien_width, self.alien_height)
+        )
+        self.alien5_img = self.img_format(
+            "Graphics/alien5.png", (self.alien_width, self.alien_height)
+        )
+        self.bullet_img = self.img_format(
+            "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
+        )
+        self.asteroid_img = self.img_format(
+            "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
+        )
+        self.aliensType = {
+            1: self.alien1_img,
+            2: self.alien2_img,
+            3: self.alien3_img,
+            4: self.alien4_img,
+            5: self.alien5_img
+        }
+
+        self.spawnPlayer(590,750)
 
     def draw(self):
         """Méthode de lancement de la vue"""
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
+        super(GameView, self).draw()
 
+    def spawnPlayer(self, x, y):
+        self.player = self.canvas.create_image(x, y, image=self.player_img)
+
+    def spawnAlien(self,alien_type:int,x,y):
+        self.aliens.append(
+            self.canvas.create_image(x, y, image=self.aliensType[alien_type]))
+    
+    def spawnBullet(self,x,y):
+        self.bullet.append(self.canvas.create_image
+                           (x, y, image=self.bullet_img))
+        print(self.bullet)
+
+    def spawnAsteroid(self,x,y):
+        self.asteroid = self.canvas.create_image(x,y,image = self.asteroid_img)
+
+    def moveSprite(self, sprite, x, y):
+        self.canvas.move(sprite, x, y)
+
+    def deleteSprite(self, sprite):
+        self.canvas.delete(sprite)
+    def isVisible(self, sprite):
+        # If the sprite is not visible (out of the window), return False
+        x, y= self.canvas.coords(sprite)
+        if x < 0 or x > self.canvas.winfo_width() or y < 0 or y > self.canvas.winfo_height():
+            return False
+        else:
+            return True
 
 
 class HighscoreView(View):

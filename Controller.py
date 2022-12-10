@@ -31,6 +31,8 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
+
+from random import random
 import tkinter as tk
 from Container import BetterFrame
 from abc import ABC  # Classe abstraite
@@ -134,8 +136,8 @@ class GameController(Controller):
     """
     def __init__(self, root: tk.Tk):
         super().__init__(root)
+        self.eventPos = (0,0)
         self.view = GameView(self.main_frame)
-
         self.bind_mouse_pregame()
 
     def start(self):
@@ -155,17 +157,65 @@ class GameController(Controller):
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
         self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
+        self.tick()
 
     def mouse_listener_move(self, event):
         """Déplacement du carré"""
-        #self.view.canvas.coords(self.player, event.x, event.y, event.x + 10, event.y + 10)
-        print(event.x, event.y)
+        self.eventPos = (event.x, event.y)
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
+        player_pos = self.view.canvas.coords(self.view.player)
+        self.view.spawnBullet(player_pos[0], player_pos[1])
 
     def mouse_listener_right_click(self, event):
         """Création d'un ennemi"""
+        # Debug ALIEN
+        # Random x from the screen width
+        randX = random() * self.view.canvas.winfo_width()
+        self.view.spawnAlien(1, randX, 0)
+
+    def player_movement(self):
+        """Déplacement du joueur"""
+        playerX = self.view.canvas.coords(self.view.player)[0]
+        playerY = self.view.canvas.coords(self.view.player)[1]
+        speed = 10
+
+
+
+        if self.eventPos[0] - playerX > speed:
+            self.view.canvas.move(self.view.player, speed, 0)
+        elif self.eventPos[0] - playerX < -speed:
+            self.view.canvas.move(self.view.player, -speed, 0)
+        if self.eventPos[1] - playerY > speed:
+            self.view.canvas.move(self.view.player, 0, speed)
+        elif self.eventPos[1] - playerY < -speed:
+            self.view.canvas.move(self.view.player, 0, -speed)
+
+
+    def tick(self):
+        """Méthode appelée à chaque tick du jeu"""
+        self.player_movement()
+
+        for bullet in self.view.bullet:
+            if self.view.isVisible(bullet):
+                self.view.moveSprite(bullet, 0, -10)
+            else:
+                self.view.deleteSprite(bullet)
+                self.view.bullet.remove(bullet)
+
+        for alien in self.view.aliens:
+            if self.view.isVisible(alien):
+                self.view.moveSprite(alien, 0, 10)
+            else:
+                self.view.deleteSprite(alien)
+                self.view.aliens.remove(alien)
+
+
+        #60 fps
+        self.view.canvas.after(16, self.tick)
+
+
 
 class ArsenalController(Controller):
     """Controlleur de l'arsenal
