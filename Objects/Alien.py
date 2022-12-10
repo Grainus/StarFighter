@@ -21,7 +21,7 @@
 from abc import ABC
 
 from Object import Object
-import config
+from Position import Vecteur
 
 class Enemy(Object, ABC):
     """Classe abstraite pour les ennemis"""
@@ -32,11 +32,8 @@ class Enemy(Object, ABC):
 class Alien(Enemy):
     """Classe pour les OVNIS"""
     def __init__(self, position):
-        super().__init__(
-                position,
-                width=config.ALIEN_WIDTH,
-                height=config.ALIEN_HEIGHT
-        )
+        super().__init__(position, width=50, height=50)
+        self.velocity = Vecteur(0, -1)
 
 
 class Boss(Alien):

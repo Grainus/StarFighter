@@ -22,5 +22,5 @@ from Object import Object
 
 class Vaisseau(Object):
     """Classe représentant un vaisseau joueur."""
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, position):
+        super().__init__(position, width=100, height=100)
