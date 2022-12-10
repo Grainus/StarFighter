@@ -32,7 +32,7 @@ from __future__ import annotations
 
 # Importation des modules standards
 
-from random import random, choice
+from random import random, choice, randint
 import tkinter as tk
 from Container import BetterFrame
 from abc import ABC  # Classe abstraite
@@ -142,9 +142,9 @@ class GameController(Controller):
         self.asteroid_spawn_timer_max = 120
 
         self.ennemy_spawn_timer \
-            = self.get_random_value(0, self.ennemy_spawn_timer_max)
+            = randint(0, self.ennemy_spawn_timer_max)
         self.asteroid_spawn_timer \
-            = self.get_random_value(0, self.asteroid_spawn_timer_max)
+            = randint(0, self.asteroid_spawn_timer_max)
 
     def start(self):
         super().start()
@@ -184,17 +184,17 @@ class GameController(Controller):
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
         if self.asteroid_spawn_timer == 0:
-            self.view.spawnAsteroid(self.get_random_value(0, self.view.canvas.winfo_width()), 0)
-            self.asteroid_spawn_timer = self.get_random_value(0, self.asteroid_spawn_timer_max)
+            self.view.spawnAsteroid(randint(0, self.view.canvas.winfo_width()), 0)
+            self.asteroid_spawn_timer = randint(0, self.asteroid_spawn_timer_max)
         else:
             self.asteroid_spawn_timer -= 1
 
         if self.ennemy_spawn_timer == 0:
-            x = self.get_random_value(0, self.view.canvas.winfo_width())
-            alien_type = self.get_random_value(1, 5)
+            x = randint(0, self.view.canvas.winfo_width())
+            alien_type = randint(1, 5)
             self.view.spawnAlien(alien_type, x, 0)
 
-            self.ennemy_spawn_timer = self.get_random_value(0, self.ennemy_spawn_timer_max)
+            self.ennemy_spawn_timer = randint(0, self.ennemy_spawn_timer_max)
         else:
             self.ennemy_spawn_timer -= 1
 
@@ -232,9 +232,6 @@ class GameController(Controller):
                 self.view.asteroids.remove(asteroid)
 
         self.view.canvas.after(16, self.tick)
-
-    def get_random_value(self, min: int, max: int) -> int:
-        return int(random() * (max - min) + min)
 
 
 class ArsenalController(Controller):
