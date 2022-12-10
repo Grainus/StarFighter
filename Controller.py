@@ -119,11 +119,6 @@ class MenuController(Controller):
                                        self.change_controller
                                        (HighscoreController))
 
-        self.view.main_canvas.tag_bind(self.view.arsenal_button,
-                                       "<Button-1>",
-                                       lambda _:
-                                       self.change_controller
-                                       (ArsenalController))
 
         super().start()
 
@@ -143,12 +138,19 @@ class GameController(Controller):
         self.game = GameModel(Difficulty.NORMAL)
         self.bind_mouse_pregame()
 
+        self.ennemy_spawn_timer_max = 50
+        self.asteroid_spawn_timer_max = 120
+
+        self.ennemy_spawn_timer \
+            = self.get_random_value(0, self.ennemy_spawn_timer_max)
+        self.asteroid_spawn_timer \
+            = self.get_random_value(0, self.asteroid_spawn_timer_max)
+
     def start(self):
         super().start()
 
     def initalize_game(self):
         """Initialisation du jeu"""
-        # TODO: Config.get_instant()
         self.bind_mouse_game()
 
     def bind_mouse_pregame(self):
@@ -159,8 +161,6 @@ class GameController(Controller):
         """Bind du carré à la souris afin qu'il suive le curseur"""
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
-        # self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
-        self.view.canvas.bind("<Button-2>", self.mouse_listener_middle_click)
         self.tick()
 
     def mouse_listener_move(self, event):
@@ -171,13 +171,6 @@ class GameController(Controller):
         """Création d'un projectile"""
         player_pos = self.view.canvas.coords(self.view.player)
         self.view.spawnBullet(player_pos[0], player_pos[1])
-
-    def mouse_listener_middle_click(self, event):
-        """Création d'un asteroide"""
-        # Debug ASTEROID
-        # Random x from the screen width
-        randX = random() * self.view.canvas.winfo_width()
-        self.view.spawnAsteroid(randX, 0)
 
     def player_movement(self):
         """Déplacement du joueur"""
@@ -190,6 +183,22 @@ class GameController(Controller):
 
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
+        if self.asteroid_spawn_timer == 0:
+            self.view.spawnAsteroid(self.get_random_value(0, self.view.canvas.winfo_width()), 0)
+            self.asteroid_spawn_timer = self.get_random_value(0, self.asteroid_spawn_timer_max)
+        else:
+            self.asteroid_spawn_timer -= 1
+
+        if self.ennemy_spawn_timer == 0:
+            x = self.get_random_value(0, self.view.canvas.winfo_width())
+            alien_type = self.get_random_value(1, 5)
+            self.view.spawnAlien(alien_type, x, 0)
+
+            self.ennemy_spawn_timer = self.get_random_value(0, self.ennemy_spawn_timer_max)
+        else:
+            self.ennemy_spawn_timer -= 1
+
+        # Effectue le mouvement du joueur
         self.player_movement()
         if not self.game.enemies:
             for alien in self.game.start_wave():
@@ -197,6 +206,7 @@ class GameController(Controller):
                         choice(ALIENTYPES), *alien.position
                 )
 
+        # Déplace les projectiles ou les retire si ils sont hors de l'écran
         for bullet in self.view.bullet:
             if self.view.isVisible(bullet):
                 self.view.moveSprite(bullet, 0, -10)
@@ -213,17 +223,18 @@ class GameController(Controller):
                 self.view.deleteSprite(id)
                 self.game.enemies.remove(alien)
 
+        # Déplace les asteroïdes ou les retire si ils sont hors de l'écran
         for asteroid in self.view.asteroids:
             if self.view.isVisible(asteroid):
-                self.view.moveSprite(asteroid, 0, 10)
+                self.view.moveSprite(asteroid, 0, 7)
             else:
                 self.view.deleteSprite(asteroid)
                 self.view.asteroids.remove(asteroid)
 
-
-        #60 fps
         self.view.canvas.after(16, self.tick)
 
+    def get_random_value(self, min: int, max: int) -> int:
+        return int(random() * (max - min) + min)
 
 
 class ArsenalController(Controller):
@@ -267,3 +278,7 @@ class OptionsController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = OptionsView(self.main_frame)
+
+        self.view.main_canvas.tag_bind(self.view.menu_button, "<Button-1>",
+                                       lambda event:
+                                       self.change_controller(MenuController))
