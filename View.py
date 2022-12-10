@@ -173,6 +173,10 @@ class GameView(View):
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
+        self.aliens = []
+        self.player = None
+        self.bullet = []
+
         self.player_width = 100
         self.player_height = 100
         self.alien_width = 50
@@ -187,7 +191,6 @@ class GameView(View):
             "Graphics/player.png", (self.player_width, self.player_height)
         )
 
-        
         self.alien1_img = self.img_format(
             "Graphics/alien1.png", (self.alien_width, self.alien_height)
         )
@@ -209,31 +212,46 @@ class GameView(View):
         self.asteroid_img = self.img_format(
             "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
         )
-        aliens = {
-            1 : self.alien1_img,
-            2 : self.alien2_img,
-            3 : self.alien3_img,
-            4 : self.alien4_img,
-            5 : self.alien5_img
+        self.aliensType = {
+            1: self.alien1_img,
+            2: self.alien2_img,
+            3: self.alien3_img,
+            4: self.alien4_img,
+            5: self.alien5_img
         }
-        
 
     def draw(self):
         """Méthode de lancement de la vue"""
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
+        super(GameView, self).draw()
 
-    def spawnPlayer(self,x,y):
-        self.player = self.canvas.create_image(x,y,image = self.player_img)
+    def spawnPlayer(self, x, y):
+        self.player = self.canvas.create_image(x, y, image=self.player_img)
 
     def spawnAlien(self,alien_type:int,x,y):
-        self.alien = self.canvas.create_image(x,y,image=self.aliens[alien_type])
+        self.aliens.append(
+            self.canvas.create_image(x, y, image=self.aliensType[alien_type]))
     
     def spawnBullet(self,x,y):
-        self.bullet = self.canvas.create_image(x,y,image = self.bullet_img)
+        self.bullet.append(self.canvas.create_image
+                           (x, y, image=self.bullet_img))
+        print(self.bullet)
 
     def spawnAsteroid(self,x,y):
         self.asteroid = self.canvas.create_image(x,y,image = self.asteroid_img)
 
+    def moveSprite(self, sprite, x, y):
+        self.canvas.move(sprite, x, y)
+
+    def deleteSprite(self, sprite):
+        self.canvas.delete(sprite)
+    def isVisible(self, sprite):
+        # If the sprite is not visible (out of the window), return False
+        x, y= self.canvas.coords(sprite)
+        if x < 0 or x > self.canvas.winfo_width() or y < 0 or y > self.canvas.winfo_height():
+            return False
+        else:
+            return True
 
 
 class HighscoreView(View):
