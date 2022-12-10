@@ -31,7 +31,7 @@ Classe:
 """
 from Container import BetterCanvas, BetterFrame, BetterLabel, BetterButton
 from tkinter import PhotoImage
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk  # type: ignore
 from abc import ABC
 
 
@@ -174,10 +174,6 @@ class GameView(View):
     def __init__(self, main_frame: BetterFrame):
         super().__init__(main_frame)
 
-        self.player = None
-        self.bullet = []
-        self.asteroids = []
-
         self.player_width = 100
         self.player_height = 100
         self.alien_width = 50
@@ -232,16 +228,13 @@ class GameView(View):
             self.background_width/2, self.background_height/2,
             image=self.background_img)
 
-        self.spawnPlayer(590, 750)
-
     def draw(self):
         """Méthode de lancement de la vue"""
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
-        super(GameView, self).draw()
+        super().draw()
 
     def spawnPlayer(self, x, y) -> int:
-        self.player = self.canvas.create_image(x, y, image=self.player_img)
-        return self.player
+        return self.canvas.create_image(x, y, image=self.player_img)
 
     def spawnAlien(self, alien_type: int, x, y) -> int:
         return self.canvas.create_image(
@@ -249,13 +242,11 @@ class GameView(View):
                 image=self.aliensType[alien_type]
         )
     
-    def spawnBullet(self, x, y):
-        self.bullet.append(self.canvas.create_image
-                           (x, y, image=self.bullet_img))
+    def spawnBullet(self, x, y) -> int:
+        return self.canvas.create_image(x, y, image=self.bullet_img)
 
-    def spawnAsteroid(self, x, y):
-        self.asteroids.append(
-            self.canvas.create_image(x, y, image=self.asteroid_img))
+    def spawnAsteroid(self, x, y) -> int:
+        return self.canvas.create_image(x, y, image=self.asteroid_img)
 
     def moveSprite(self, sprite, x, y):
         self.canvas.moveto(sprite, x, y)

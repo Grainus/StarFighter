@@ -46,7 +46,7 @@ from View import (
     ArsenalView
 )
 from Model import GameModel, Difficulty
-from Objects.Position import Point
+from Objects.Position import Point  # type: ignore
 from Objects.Alien import ALIENTYPES
 
 class Controller(ABC):
@@ -136,6 +136,7 @@ class GameController(Controller):
         self.eventPos = (0, 0)
         self.view: GameView = GameView(self.main_frame)
         self.game = GameModel(Difficulty.NORMAL)
+        self.game.player.id = self.view.spawnPlayer(590, 750)
         self.bind_mouse_pregame()
 
         self.ennemy_spawn_timer_max = 50
@@ -169,8 +170,8 @@ class GameController(Controller):
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
-        player_pos = self.view.canvas.coords(self.view.player)
-        self.view.spawnBullet(player_pos[0], player_pos[1])
+        bullet = self.game.spawn_bullet()
+        bullet.id = self.view.spawnBullet(*bullet.position)
 
     def player_movement(self):
         """Déplacement du joueur"""
@@ -179,57 +180,39 @@ class GameController(Controller):
         destination.x -= player.dimension.width / 2
         destination.y -= player.dimension.height / 2
         player.move_to(destination)
-        self.view.canvas.moveto(self.view.player, *player.position)
+        self.view.canvas.moveto(self.game.player.id, *player.position)
 
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
         if self.asteroid_spawn_timer == 0:
-            self.view.spawnAsteroid(randint(0, self.view.canvas.winfo_width()), 0)
+            asteroid = self.game.spawn_asteroid(self.view.canvas.winfo_width())
+            asteroid.id = self.view.spawnAsteroid(*asteroid.position)
             self.asteroid_spawn_timer = randint(0, self.asteroid_spawn_timer_max)
         else:
             self.asteroid_spawn_timer -= 1
 
         if self.ennemy_spawn_timer == 0:
-            x = randint(0, self.view.canvas.winfo_width())
-            alien_type = randint(1, 5)
-            self.view.spawnAlien(alien_type, x, 0)
-
+            alien = self.game.spawn_alien(self.view.canvas.winfo_width())
+            alien.id = self.view.spawnAlien(choice(ALIENTYPES), *alien.position)
             self.ennemy_spawn_timer = randint(0, self.ennemy_spawn_timer_max)
         else:
             self.ennemy_spawn_timer -= 1
 
         # Effectue le mouvement du joueur
         self.player_movement()
-        if not self.game.enemies:
-            for alien in self.game.start_wave():
-                alien.id = self.view.spawnAlien(
-                        choice(ALIENTYPES), *alien.position
-                )
 
-        # Déplace les projectiles ou les retire si ils sont hors de l'écran
-        for bullet in self.view.bullet:
-            if self.view.isVisible(bullet):
-                self.view.moveSprite(bullet, 0, -10)
-            else:
-                self.view.deleteSprite(bullet)
-                self.view.bullet.remove(bullet)
+        killcond = lambda obj: (
+                not self.view.isVisible(obj.id)
+                and obj.position.y > 0
+        )
 
-        for alien in self.game.enemies:
-            id = alien.id
-            if self.view.isVisible(id) or alien.position.y < 0:
-                alien.update()
-                self.view.moveSprite(id, *alien.position)
-            else:
-                self.view.deleteSprite(id)
-                self.game.enemies.remove(alien)
+        # Déplace tous les objets et les retire s'ils sont hors de l'écran
 
-        # Déplace les asteroïdes ou les retire si ils sont hors de l'écran
-        for asteroid in self.view.asteroids:
-            if self.view.isVisible(asteroid):
-                self.view.moveSprite(asteroid, 0, 7)
-            else:
-                self.view.deleteSprite(asteroid)
-                self.view.asteroids.remove(asteroid)
+        for trash in self.game.update(kill_if=killcond):
+            self.view.deleteSprite(trash.id)
+        
+        for obj in self.game.sprites:
+            self.view.moveSprite(obj.id, *obj.position)
 
         self.view.canvas.after(16, self.tick)
 
