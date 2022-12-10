@@ -45,6 +45,9 @@ class View(ABC):
     def __init__(self, main_frame: BetterFrame):
         self.main_frame = main_frame
 
+        self.background_width = 1200
+        self.background_height = 800
+
     def draw(self):
         """Méthode abstraite de lancement de la vue"""
         # Recursively place all the widgets in the frame
@@ -100,8 +103,6 @@ class MenuView(View):
         self.btn_height = 200
         self.logo_width = 600
         self.logo_height = 200
-        self.background_width = 1200
-        self.background_height = 800
 
         self.background_img = self.img_format(
             "Graphics/background.gif", (self.background_width,
@@ -184,8 +185,16 @@ class GameView(View):
         self.bullet_width = 50
         self.bullet_height = 50
 
+
         self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5)
         self.canvas.config(bg="black", width=1200, height=800)
+
+
+        
+        self.background_img = self.img_format(
+            "Graphics/background.gif", (self.background_width,
+                                        self.background_height)
+        )
 
         self.player_img = self.img_format(
             "Graphics/player.png", (self.player_width, self.player_height)
@@ -210,7 +219,7 @@ class GameView(View):
             "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
         )
         self.asteroid_img = self.img_format(
-            "Graphics/bullet.png", (self.bullet_width, self.bullet_height)
+            "Graphics/asteroid.png", (self.bullet_width, self.bullet_height)
         )
         self.aliensType = {
             1: self.alien1_img,
@@ -219,6 +228,10 @@ class GameView(View):
             4: self.alien4_img,
             5: self.alien5_img
         }
+
+        self.background = self.canvas.create_image(
+            self.background_width/2, self.background_height/2,
+            image=self.background_img)
 
         self.spawnPlayer(590,750)
 
@@ -237,7 +250,6 @@ class GameView(View):
     def spawnBullet(self,x,y):
         self.bullet.append(self.canvas.create_image
                            (x, y, image=self.bullet_img))
-        print(self.bullet)
 
     def spawnAsteroid(self,x,y):
         self.asteroid = self.canvas.create_image(x,y,image = self.asteroid_img)
