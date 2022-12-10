@@ -17,18 +17,12 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
+
 from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
 
-class Vaisseau(Object):
-    """Classe représentant un vaisseau joueur."""
+class Asteroid(Object):
+    """Classe pour les astéroides"""
     def __init__(self, position: Point):
-        super().__init__(position, width=100, height=100)
-        self.max_speed = 10
-        self.damage = 5
-
-    def move_to(self, destination: Point) -> None:
-        movevec = destination - self.position
-        if movevec.norme:
-            movevec = movevec.asnorm(min(movevec.norme, self.max_speed))
-            self.position += movevec
+        super().__init__(position, width=5, height=5)
+        self.velocity = Vecteur(0, 7)

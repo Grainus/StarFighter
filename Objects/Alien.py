@@ -18,8 +18,8 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 
-from .Object import Object
-from .Position import Vecteur, Point
+from .Object import Object  # type: ignore
+from .Position import Vecteur, Point  # type: ignore
 
 ALIENTYPES = (1, 2, 3, 4, 5)
 
@@ -27,5 +27,4 @@ class Alien(Object):
     """Classe abstraite pour les aliens"""
     def __init__(self, position: Point):
         super().__init__(position, width=50, height=50)
-        self.velocity = Vecteur(0, 10)
-        self.id = 0
+        self.velocity = Vecteur(0, 5)
