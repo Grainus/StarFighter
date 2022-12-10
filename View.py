@@ -220,6 +220,8 @@ class GameView(View):
             5: self.alien5_img
         }
 
+        self.spawnPlayer(590,750)
+
     def draw(self):
         """Méthode de lancement de la vue"""
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")

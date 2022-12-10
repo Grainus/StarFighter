@@ -129,8 +129,8 @@ class GameController(Controller):
 
     def __init__(self, root: Tk):
         super().__init__(root)
+        self.eventPos = (0,0)
         self.view = GameView(self.main_frame)
-
         self.bind_mouse_pregame()
 
     def start(self):
@@ -144,34 +144,54 @@ class GameController(Controller):
     def bind_mouse_pregame(self):
         """Bind les boutons de la souris avant le début du jeu"""
         self.view.canvas.bind("<Button-1>", lambda event: self.initalize_game())
-        self.tick()
 
     def bind_mouse_game(self):
         """Bind du carré à la souris afin qu'il suive le curseur"""
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
         self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
+        self.tick()
 
     def mouse_listener_move(self, event):
         """Déplacement du carré"""
-        print(event.x, event.y)
+        self.eventPos = (event.x, event.y)
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
-        self.view.spawnBullet(event.x, event.y)
+        player_pos = self.view.canvas.coords(self.view.player)
+        self.view.spawnBullet(player_pos[0], player_pos[1])
 
     def mouse_listener_right_click(self, event):
         """Création d'un ennemi"""
 
+    def player_movement(self):
+        """Déplacement du joueur"""
+        playerX = self.view.canvas.coords(self.view.player)[0]
+        playerY = self.view.canvas.coords(self.view.player)[1]
+        speed = 10
+
+
+
+        if self.eventPos[0] - playerX > speed:
+            self.view.canvas.move(self.view.player, speed, 0)
+        elif self.eventPos[0] - playerX < -speed:
+            self.view.canvas.move(self.view.player, -speed, 0)
+        if self.eventPos[1] - playerY > speed:
+            self.view.canvas.move(self.view.player, 0, speed)
+        elif self.eventPos[1] - playerY < -speed:
+            self.view.canvas.move(self.view.player, 0, -speed)
+
+
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
+        self.player_movement()
         for bullet in self.view.bullet:
             if self.view.isVisible(bullet):
                 self.view.moveSprite(bullet, 0, -10)
             else:
-                print("Bullet out of screen")
                 self.view.deleteSprite(bullet)
                 self.view.bullet.remove(bullet)
+
 
         #60 fps
         self.view.canvas.after(16, self.tick)
