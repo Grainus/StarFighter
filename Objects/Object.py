@@ -65,7 +65,7 @@ class Object(ABC):
     
     @property
     def center(self) -> Point:
-        return self.position - self.dimension / 2
+        return self.position + self.dimension / 2
 
     def collides(self, other: Object) -> bool:
         """Vérifie si deux objets sont en collision"""

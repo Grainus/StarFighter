@@ -131,7 +131,7 @@ class GameModel:
         return asteroid
 
     def spawn_bullet(self) -> Bullet:
-        bullet = Bullet(self.player.position, self.player.damage)
+        bullet = Bullet(self.player.center, self.player.damage)
         self.sprites.append(bullet)
         return bullet
 
