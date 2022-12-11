@@ -26,9 +26,13 @@ class Vaisseau(Object):
         super().__init__(position, width=100, height=100)
         self.max_speed = 10
         self.damage = 5
+        self.health = 100
 
     def move_to(self, destination: Point) -> None:
         movevec = destination - self.position
         if movevec.norme:
             movevec = movevec.asnorm(min(movevec.norme, self.max_speed))
             self.position += movevec
+
+    def hit(self, damage: int) -> None:
+        self.health -= damage

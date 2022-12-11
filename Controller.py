@@ -47,7 +47,8 @@ from View import (
 )
 from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
-from Objects.Alien import ALIENTYPES
+from Objects.Alien import Alien, ALIENTYPES
+from Objects.Asteroid import Asteroid  # type: ignore
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -180,6 +181,7 @@ class GameController(Controller):
         destination.x -= player.dimension.width / 2
         destination.y -= player.dimension.height / 2
         player.move_to(destination)
+        self.game.player.update()
         self.view.canvas.moveto(self.game.player.id, *player.position)
 
     def tick(self):
@@ -201,18 +203,22 @@ class GameController(Controller):
         # Effectue le mouvement du joueur
         self.player_movement()
 
+        # Déplace tous les objets et les retire s'ils sont hors de l'écran
+
         killcond = lambda obj: (
                 not self.view.isVisible(obj.id)
-                and obj.position.y > 0
         )
-
-        # Déplace tous les objets et les retire s'ils sont hors de l'écran
 
         for trash in self.game.update(kill_if=killcond):
             self.view.deleteSprite(trash.id)
-        
+
         for obj in self.game.sprites:
             self.view.moveSprite(obj.id, *obj.position)
+
+        # Vérifie les collisions
+        cols = self.game.get_collisions(self.game.player, (Alien, Asteroid))
+        for collision in cols:
+            self.game.player.hit(collision.damage)
 
         self.view.canvas.after(16, self.tick)
 

@@ -26,5 +26,5 @@ ALIENTYPES = (1, 2, 3, 4, 5)
 class Alien(Object):
     """Classe abstraite pour les aliens"""
     def __init__(self, position: Point):
-        super().__init__(position, width=50, height=50)
+        super().__init__(position, width=25, height=25)
         self.velocity = Vecteur(0, 5)

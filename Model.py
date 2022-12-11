@@ -77,14 +77,20 @@ class GameModel:
             self, arg: Type[ObjT1], cls: Type[ObjT2]
     ) -> list[tuple[ObjT1, ObjT2]]: ...
 
+    @overload
     def get_collisions(
-            self, arg: Object | Type[ObjT1], cls: Type[ObjT2]
-    ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]]:
+            self, arg: Type[ObjT1], cls: tuple[Type[Object]]
+    ) -> list[tuple[ObjT1, Object]]: ...
+
+    def get_collisions(
+            self, arg: Object | Type[ObjT1],
+            cls: Type[ObjT2] | tuple[Type[Object]]
+    ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]] | list[tuple[ObjT1, Object]]:
         """Retourne une liste d'objets en collision.
 
         Args:
             arg: L'objet ou le type principal.
-            cls: La classe des objets qu'on veut comparer.
+            cls: La ou les classes des objets qu'on veut comparer.
 
         Returns:
             Si le premier paramètre est un objet, une liste de tous les
@@ -93,7 +99,7 @@ class GameModel:
             contenants toutes les paires d'objets de type `arg` et `cls`
             qui sont en collision.
         """
-        if isinstance(arg, type):
+        if isinstance(arg, (type, list)):
             return [
                 (obj1, obj2)
                 for obj1 in self.sprites
@@ -101,13 +107,14 @@ class GameModel:
                 for obj2 in self.sprites
                 if isinstance(obj2, cls)
                 if obj1.collides(obj2)
+                and obj1 is not obj2
             ]
         else:
             return [
                 obj
                 for obj in self.sprites
                 if isinstance(obj, cls)
-                if obj.collides(obj)
+                if obj.collides(arg)
             ]
 
     def update(self, *, kill_if: Callable[[Object], bool]) -> list[Object]:

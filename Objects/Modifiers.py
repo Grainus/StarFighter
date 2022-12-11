@@ -19,7 +19,7 @@
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from abc import ABC
 
-from .Object import Object
+from .Object import Object  # type: ignore
 
 
 class Modifiers(Object, ABC):

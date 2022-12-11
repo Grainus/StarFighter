@@ -35,7 +35,7 @@ class Object(ABC):
         self.id = 0
 
     def _update_points(self) -> None:
-        self.points = self.dimension.to_points(self.position, True)
+        self.points = self.dimension.to_points(self.position, False)
 
     @property
     def width(self):
@@ -67,8 +67,7 @@ class Object(ABC):
     def center(self) -> Point:
         return self.position + self.dimension / 2
 
-    def collides(self, other: Object) -> bool:
-        """Vérifie si deux objets sont en collision"""
+    def _collision_test(self, other: Object) -> bool:
         overlap_x = (
             self.points[0].x <= other.points[0].x <= self.points[1].x or
             self.points[0].x <= other.points[1].x <= self.points[1].x
@@ -78,9 +77,16 @@ class Object(ABC):
             self.points[0].y <= other.points[1].y <= self.points[1].y
         )
 
-        return overlap_x and overlap_y
+        if overlap_x and overlap_y :
+            return True
+        return False
+
+    def collides(self, other: Object) -> bool:
+        """Vérifie si deux objets sont en collision"""
+        return self._collision_test(other) or other._collision_test(self)
 
     def update(self) -> None:
         """Mise à jour de la position de l'objet selon sa vélocité"""
         self.speed += self.acceleration
         self.position += self.velocity
+        self._update_points()
