@@ -24,9 +24,8 @@ from dataclasses import dataclass
 from enum import Enum
 import random
 
-from Objects.Object import Object
-from Objects.Alien import Alien
-from Objects.Modifiers import Modifiers  # type: ignore
+from Objects.Object import Object  # type: ignore
+from Objects.Alien import Alien  # type: ignore
 from Objects.Asteroid import Asteroid  # type: ignore
 from Objects.Bullet import Bullet  # type: ignore
 from Objects.Vaisseau import Vaisseau  # type: ignore
@@ -70,16 +69,6 @@ class GameModel:
 
     @overload
     def get_collisions(
-            self, arg: Object, cls: Type[ObjT1]
-    ) -> list[ObjT1]: ...
-
-    @overload
-    def get_collisions(
-            self, arg: Object, cls: tuple[Type[Object], ...]
-    ) -> list[Object]: ...
-
-    @overload
-    def get_collisions(
             self, arg: Type[ObjT1], cls: Type[ObjT2]
     ) -> list[tuple[ObjT1, ObjT2]]: ...
 
@@ -88,10 +77,20 @@ class GameModel:
             self, arg: Type[ObjT1], cls: tuple[Type[Object], ...]
     ) -> list[tuple[ObjT1, Object]]: ...
 
+    @overload
+    def get_collisions(
+            self, arg: Object, cls: Type[ObjT1]
+    ) -> list[ObjT1]: ...
+
+    @overload
+    def get_collisions(
+            self, arg: Object, cls: tuple[Type[Object], ...]
+    ) -> list[Object]: ...
+
     def get_collisions(
             self, arg: Object | Type[ObjT1],
             cls: Type[ObjT2] | tuple[Type[Object], ...]
-    ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]] | list[tuple[ObjT1, Object]]:
+    ):
         """Retourne une liste d'objets en collision.
 
         Args:
@@ -105,7 +104,7 @@ class GameModel:
             contenants toutes les paires d'objets de type `arg` et `cls`
             qui sont en collision.
         """
-        if isinstance(arg, (type, list)):
+        if isinstance(arg, (type, tuple)):
             return [
                 (obj1, obj2)
                 for obj1 in self.sprites

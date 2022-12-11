@@ -31,7 +31,6 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
-
 from random import choice, randint
 import tkinter as tk
 from abc import ABC  # Classe abstraite
@@ -48,8 +47,7 @@ from View import (
 )
 from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
-from Objects.Alien import Alien, ALIENTYPES
-from Objects.Asteroid import Asteroid  # type: ignore
+from Objects.Alien import ALIENTYPES  # type: ignore
 
 class Controller(ABC):
     """Classe abstraite des controlleurs

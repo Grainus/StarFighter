@@ -32,7 +32,7 @@ Classe:
 from abc import ABC
 
 from tkinter import PhotoImage
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk  # type: ignore
 from functools import cache
 
 from Container import (

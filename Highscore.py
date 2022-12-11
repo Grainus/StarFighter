@@ -20,12 +20,12 @@
 """Permet d'enregistrer des scores à un fichier."""
 
 # Documentation
-from typing import Callable, LiteralString
-from functools import partial
+from typing import Callable, Literal
 
 # Modules standard
 import sqlite3 as sql
 import os
+from functools import partial
 
 
 class HighScore:
@@ -107,7 +107,7 @@ class HighScore:
 
     @staticmethod
     def get_scores(
-            order: LiteralString = "Score"
+            order: Literal["Score", "Date", "UserName"] = "Score"
     ) -> list[tuple[tuple[str, int], Callable[[], None]]]:
         """Retourne une liste de tuples contenant les scores (nom et
         points) ainsi qu'une fonction qui supprime le score.

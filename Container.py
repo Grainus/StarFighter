@@ -24,7 +24,7 @@ Il contient les classes suivantes:
     - Container
     - BetterLabel
 """
-from tkinter import Frame, Label, Button, Canvas,Listbox
+from tkinter import Frame, Label, Button, Canvas, Listbox
 
 
 class BetterButton(Button):
