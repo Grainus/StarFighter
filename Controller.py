@@ -43,7 +43,8 @@ from View import (
     GameView,
     HighscoreView,
     OptionsView,
-    ArsenalView
+    ArsenalView,
+    GameOverView
 )
 from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
@@ -208,6 +209,8 @@ class GameController(Controller):
                 not self.view.isVisible(obj.id)
         )
 
+        self.view.updateScore(self.game.score)
+
         for trash in self.game.update(kill_if=killcond):
             self.view.deleteSprite(trash.id)
 
@@ -217,9 +220,11 @@ class GameController(Controller):
         if self.game.player.alive():
             self.view.canvas.after(16, self.tick)
         else:
-            # Start game over?
+            self.change_controller(GameOverController)
             print(f"Your score: {self.game.score}")
-            HighScore.save_score("Player", self.game.score)
+            self.root.controller.score =self.game.score
+            self.root.controller.show_score()
+            
 
 
 class ArsenalController(Controller):
@@ -249,9 +254,38 @@ class HighscoreController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
+        self.view.main_canvas.tag_bind(self.view.menu_button, "<Button-1>",
+                                       lambda event:
+                                       self.change_controller(MenuController))
+        self.view.load_scores(HighScore.get_scores())
         # Saving score: Highscore.save_score(name, score)
         # Getting score: HighScore.get_scores()
 
+class GameOverController(Controller):
+    """Controlleur de la fin de partie
+
+    :argument root: Fenêtre principale du jeu
+
+    :param self.root: Fenêtre principale du jeu
+    :param self.main_frame: Frame graphique principale du jeu.
+    :param self.view: Vue associée au controlleur
+
+    """
+    def __init__(self, root: tk.Tk):
+        super().__init__(root)
+        self.view = GameOverView(self.main_frame)
+        self.score = 0
+        self.view.name_entry.bind("<Return>", self.on_submit)
+        self.view.name_entry.focus_set()
+
+    def show_score(self):
+        self.view.show_score(self.score)
+
+    def on_submit(self,_):
+        self.name = self.view.name_entry.get() 
+        if(self.name):
+            HighScore.save_score(self.name,self.score)
+        self.change_controller(HighscoreController)
 
 class OptionsController(Controller):
     """Controlleur des options
