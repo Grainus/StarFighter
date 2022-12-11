@@ -32,11 +32,12 @@ from __future__ import annotations
 
 # Importation des modules standards
 
-from random import random
+from random import choice, randint
 import tkinter as tk
-from Container import BetterFrame
 from abc import ABC  # Classe abstraite
 
+from Highscore import HighScore
+from Container import BetterFrame
 from View import (
     View,
     MenuView,
@@ -45,7 +46,10 @@ from View import (
     OptionsView,
     ArsenalView
 )
-
+from Model import GameModel, Difficulty
+from Objects.Position import Point  # type: ignore
+from Objects.Alien import Alien, ALIENTYPES
+from Objects.Asteroid import Asteroid  # type: ignore
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -117,11 +121,6 @@ class MenuController(Controller):
                                        self.change_controller
                                        (HighscoreController))
 
-        self.view.main_canvas.tag_bind(self.view.arsenal_button,
-                                       "<Button-1>",
-                                       lambda _:
-                                       self.change_controller
-                                       (ArsenalController))
 
         super().start()
 
@@ -136,16 +135,25 @@ class GameController(Controller):
     """
     def __init__(self, root: tk.Tk):
         super().__init__(root)
-        self.eventPos = (0,0)
-        self.view = GameView(self.main_frame)
+        self.eventPos = (1, 1)
+        self.view: GameView = GameView(self.main_frame)
+        self.game = GameModel(Difficulty.NORMAL)
+        self.game.player.id = self.view.spawnPlayer(590, 750)
         self.bind_mouse_pregame()
+
+        self.ennemy_spawn_timer_max = 50
+        self.asteroid_spawn_timer_max = 120
+
+        self.ennemy_spawn_timer \
+            = randint(0, self.ennemy_spawn_timer_max)
+        self.asteroid_spawn_timer \
+            = randint(0, self.asteroid_spawn_timer_max)
 
     def start(self):
         super().start()
 
     def initalize_game(self):
         """Initialisation du jeu"""
-        # TODO: Config.get_instant()
         self.bind_mouse_game()
 
     def bind_mouse_pregame(self):
@@ -156,7 +164,6 @@ class GameController(Controller):
         """Bind du carré à la souris afin qu'il suive le curseur"""
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
-        self.view.canvas.bind("<Button-3>", self.mouse_listener_right_click)
         self.tick()
 
     def mouse_listener_move(self, event):
@@ -165,56 +172,56 @@ class GameController(Controller):
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
-        player_pos = self.view.canvas.coords(self.view.player)
-        self.view.spawnBullet(player_pos[0], player_pos[1])
-
-    def mouse_listener_right_click(self, event):
-        """Création d'un ennemi"""
-        # Debug ALIEN
-        # Random x from the screen width
-        randX = random() * self.view.canvas.winfo_width()
-        self.view.spawnAlien(1, randX, 0)
+        bullet = self.game.shoot(self.game.player)
+        bullet.id = self.view.spawnBullet(*bullet.position)
 
     def player_movement(self):
         """Déplacement du joueur"""
-        playerX = self.view.canvas.coords(self.view.player)[0]
-        playerY = self.view.canvas.coords(self.view.player)[1]
-        speed = 10
-
-
-
-        if self.eventPos[0] - playerX > speed:
-            self.view.canvas.move(self.view.player, speed, 0)
-        elif self.eventPos[0] - playerX < -speed:
-            self.view.canvas.move(self.view.player, -speed, 0)
-        if self.eventPos[1] - playerY > speed:
-            self.view.canvas.move(self.view.player, 0, speed)
-        elif self.eventPos[1] - playerY < -speed:
-            self.view.canvas.move(self.view.player, 0, -speed)
-
+        destination = Point(*self.eventPos)
+        player = self.game.player  # Simpler alias
+        destination.x -= player.dimension.width / 2
+        destination.y -= player.dimension.height / 2
+        player.move_to(destination)
+        self.game.player.update()
+        self.view.canvas.moveto(self.game.player.id, *player.position)
 
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
+        if self.asteroid_spawn_timer == 0:
+            asteroid = self.game.spawn_asteroid(self.view.canvas.winfo_width())
+            asteroid.id = self.view.spawnAsteroid(*asteroid.position)
+            self.asteroid_spawn_timer = randint(0, self.asteroid_spawn_timer_max)
+        else:
+            self.asteroid_spawn_timer -= 1
+
+        if self.ennemy_spawn_timer == 0:
+            alien = self.game.spawn_alien(self.view.canvas.winfo_width())
+            alien.id = self.view.spawnAlien(choice(ALIENTYPES), *alien.position)
+            self.ennemy_spawn_timer = randint(0, self.ennemy_spawn_timer_max)
+        else:
+            self.ennemy_spawn_timer -= 1
+
+        # Effectue le mouvement du joueur
         self.player_movement()
 
-        for bullet in self.view.bullet:
-            if self.view.isVisible(bullet):
-                self.view.moveSprite(bullet, 0, -10)
-            else:
-                self.view.deleteSprite(bullet)
-                self.view.bullet.remove(bullet)
+        # Déplace tous les objets et les retire s'ils sont hors de l'écran
 
-        for alien in self.view.aliens:
-            if self.view.isVisible(alien):
-                self.view.moveSprite(alien, 0, 10)
-            else:
-                self.view.deleteSprite(alien)
-                self.view.aliens.remove(alien)
+        killcond = lambda obj: (
+                not self.view.isVisible(obj.id)
+        )
 
+        for trash in self.game.update(kill_if=killcond):
+            self.view.deleteSprite(trash.id)
 
-        #60 fps
-        self.view.canvas.after(16, self.tick)
+        for obj in self.game.sprites:
+            self.view.moveSprite(obj.id, *obj.position)
 
+        if self.game.player.alive():
+            self.view.canvas.after(16, self.tick)
+        else:
+            # Start game over?
+            print(f"Your score: {self.game.score}")
+            HighScore.save_score("Player", self.game.score)
 
 
 class ArsenalController(Controller):
@@ -244,6 +251,8 @@ class HighscoreController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
+        # Saving score: Highscore.save_score(name, score)
+        # Getting score: HighScore.get_scores()
 
 
 class OptionsController(Controller):
@@ -258,3 +267,7 @@ class OptionsController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = OptionsView(self.main_frame)
+
+        self.view.main_canvas.tag_bind(self.view.menu_button, "<Button-1>",
+                                       lambda event:
+                                       self.change_controller(MenuController))

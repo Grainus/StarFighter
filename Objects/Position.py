@@ -17,6 +17,7 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
+"""Contient plusieurs classes utiles à la manipulation de positions."""
 from __future__ import annotations
 from typing import overload, Iterator, Any
 
@@ -84,9 +85,14 @@ class Vecteur(complex):
         """
         return abs(self)
 
-    @norme.setter
-    def norme(self, value: float) -> None:
-        self *= value / self.norme
+    def asnorm(self, value: float):
+        """Retourne un nouveau vecteur avec la norme spécifiée et la
+        même direction.
+        """
+        if self.norme:
+            return self.__class__(*(self * value / self.norme))
+        else:
+            return self
 
     def unitaire(self):
         """Retourne un vecteur unitaire dans la direction du vecteur."""
