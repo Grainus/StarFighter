@@ -24,7 +24,7 @@ Il contient les classes suivantes:
     - Container
     - BetterLabel
 """
-from tkinter import Frame, Label, Button, Canvas, Listbox
+from tkinter import Frame, Label, Button, Canvas, Entry
 
 
 class BetterButton(Button):
@@ -146,14 +146,14 @@ class BetterCanvas(Canvas):
         self.x = x
         self.y = y
 
-class BetterListbox(Listbox):
-    """Classe représentant une listbox tkinter modifié pour le programme.
-    Elle hérite de la classe tkinter.Listbox.
+class BetterEntry(Entry):
+    """Classe représentant une entry tkinter modifié pour le programme.
+    Elle hérite de la classe tkinter.Entry.
 
-    :param master: Le parent du listbox.
-    :param x: La position x du listbox.
-    :param y: La position y du listbox.
-    :param kwargs: Les arguments de la classe tkinter.Listbox.
+    :param master: Le parent du entry.
+    :param x: La position x du entry.
+    :param y: La position y du entry.
+    :param kwargs: Les arguments de la classe tkinter.Entry.
     """
     def __init__(self, master, x: float, y: float, **kwargs):
         super().__init__(master, **kwargs)

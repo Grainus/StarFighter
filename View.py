@@ -40,7 +40,7 @@ from Container import (
         BetterFrame,
         BetterLabel,
         BetterButton,
-        BetterListbox,
+        BetterEntry,
 )
 
 class View(ABC):
@@ -165,7 +165,7 @@ class MenuView(View):
             image=self.highscores_img)
 
         self.quit_button = self.main_canvas.create_image(
-            self.background_width*0.5, self.background_height*0.8,
+            self.background_width*0.5, self.background_height*0.85,
             image=self.quit_img)
             
     def draw(self):
@@ -241,6 +241,11 @@ class GameView(View):
             self.background_width/2, self.background_height/2,
             image=self.background_img)
 
+        self.score_id = self.canvas.create_text(
+            175, 25,
+            text = "SCORE: 0", font="Fixedsys 50 bold",fill="white"
+        )
+
     def draw(self):
         """Méthode de lancement de la vue"""
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
@@ -277,6 +282,9 @@ class GameView(View):
             return False
         else:
             return True
+
+    def updateScore(self,score:int):
+        self.canvas.itemconfig(self.score_id, text="SCORE: "+ str(score))
 
 
 class HighscoreView(View):
@@ -324,17 +332,19 @@ class HighscoreView(View):
             self.background_width*0.5, self.background_height*0.85,
             image=self.menu_img)
         
-        for i in range(10):
-            self.text = str(i+1)+": score quelquechose"
+    def load_scores(self,scores:list):
+        i=0
+        for score in scores:
+            self.text = str(i+1)+": "+str(score[0][0])+" "+str(score[0][1])+" pts"
             self.main_canvas.create_text(
                 self.background_width /2,
                 self.logo_height + ((self.background_height/20) * i),
                 text=self.text,
                 font="Fixedsys 20 bold",fill="white"
             )
-
-
-
+            i+=1
+            if i==9:
+                break
 
 
 class OptionsView(View):
@@ -432,6 +442,62 @@ class OptionsView(View):
             image=self.menu_img)
 
 
+class GameOverView(View):
+    """Classe de la vue de fin de partie
+    :argument main_frame: Frame principale de la vue
+
+    :param this.main_frame: Frame principale de la vue
+    """
+    def __init__(self, main_frame: BetterFrame):
+        super().__init__(main_frame)
+
+        self.entry_width = 400
+        
+        self.score = 0
+
+        self.logo_img = self.img_format(
+            "Graphics/logo.png", (self.logo_width, self.logo_height)
+        )
+
+        self.background_img = self.img_format(
+            "Graphics/background.gif", (self.background_width,
+                                        self.background_height)
+        )
+
+        self.main_canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
+                                        width=self.background_width,
+                                        height=self.background_height,
+                                        highlightthickness=0)
+
+        self.background = self.main_canvas.create_image(
+            self.background_width/2, self.background_height/2,
+            image=self.background_img)
+
+        
+        self.logo = self.main_canvas.create_image(
+            self.background_width/2, self.logo_height/2,
+            image=self.logo_img)
+        
+        self.GameOver_title = self.main_canvas.create_text(
+            self.background_width/2, self.background_height*0.35,
+            text = "GAME OVER", font="Fixedsys 50 bold",fill="white")
+
+        self.difficulty_title = self.main_canvas.create_text(
+            self.background_width/2, self.background_height*0.65,
+            text = "Enter Name", font="Fixedsys 30",fill="white")
+
+        self.name_entry = BetterEntry(
+            self.main_frame,0.5,0.7,bg = "black",bd = 4, fg = "white",
+            font = "Fixedsys 30"
+        )
+        self.name_entry.place(relx = 0.3,y = self.background_height*0.7)
+        self.name_entry.focus_set()
+
+    def show_score(self, score:int):
+        self.GameOver_title = self.main_canvas.create_text(
+            self.background_width/2, self.background_height*0.45,
+            text = str(score) + " pts", font="Fixedsys 50 bold",fill="white"
+            )
 
 
 
