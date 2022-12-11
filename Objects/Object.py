@@ -33,6 +33,8 @@ class Object(ABC):
         self.velocity = Vecteur(0, 0)
         self.acceleration: float = 0
         self.id = 0
+        self.health = 0
+        self.damage = 0
 
     def _update_points(self) -> None:
         self.points = self.dimension.to_points(self.position, False)

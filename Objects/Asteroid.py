@@ -26,3 +26,5 @@ class Asteroid(Object):
     def __init__(self, position: Point):
         super().__init__(position, width=5, height=5)
         self.velocity = Vecteur(0, 7)
+        self.health = 30
+        self.damage = 15

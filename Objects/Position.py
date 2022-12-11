@@ -89,7 +89,10 @@ class Vecteur(complex):
         """Retourne un nouveau vecteur avec la norme spécifiée et la
         même direction.
         """
-        return self.__class__(*(self * value / self.norme))
+        if self.norme:
+            return self.__class__(*(self * value / self.norme))
+        else:
+            return self
 
     def unitaire(self):
         """Retourne un vecteur unitaire dans la direction du vecteur."""

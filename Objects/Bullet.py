@@ -27,3 +27,4 @@ class Bullet(Object):
         super().__init__(position, width=5, height=5)
         self.velocity = Vecteur(0, -15)
         self.damage = damage
+        self.health = 100

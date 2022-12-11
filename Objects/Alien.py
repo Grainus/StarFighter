@@ -28,3 +28,6 @@ class Alien(Object):
     def __init__(self, position: Point):
         super().__init__(position, width=25, height=25)
         self.velocity = Vecteur(0, 5)
+        self.health = 50
+        self.damage = 5
+        self.firepower = 10 # * difficulty

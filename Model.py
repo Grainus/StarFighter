@@ -67,6 +67,9 @@ class GameModel:
         self.sprites: list[Object] = []
         self.stats = GameStats()
 
+    def player_alive(self) -> bool:
+        return self.player.health > 0
+
     @overload
     def get_collisions(
             self, arg: Object, cls: Type[ObjT1]
@@ -79,12 +82,12 @@ class GameModel:
 
     @overload
     def get_collisions(
-            self, arg: Type[ObjT1], cls: tuple[Type[Object]]
+            self, arg: Type[ObjT1], cls: tuple[Type[Object], ...]
     ) -> list[tuple[ObjT1, Object]]: ...
 
     def get_collisions(
             self, arg: Object | Type[ObjT1],
-            cls: Type[ObjT2] | tuple[Type[Object]]
+            cls: Type[ObjT2] | tuple[Type[Object], ...]
     ) -> list[ObjT2] | list[tuple[ObjT1, ObjT2]] | list[tuple[ObjT1, Object]]:
         """Retourne une liste d'objets en collision.
 
@@ -117,14 +120,28 @@ class GameModel:
                 if obj.collides(arg)
             ]
 
+    def collisions_update(self) -> list[Object]:
+        out: list[Object] = []
+
+        # Collisions avec le joueur
+        for obj in self.get_collisions(self.player, (Alien, Asteroid)):
+            self.player.hit(obj.damage)
+        if not self.player_alive():
+            out.append(self.player)
+
+        return out
+
     def update(self, *, kill_if: Callable[[Object], bool]) -> list[Object]:
-        """Met à jour la position de tous les objets."""
+        """Met à jour la position de tous les objets et vérifie les
+        collisions.
+        """
         out: list[Object] = []
         for obj in self.sprites:
             obj.update()
             if kill_if(obj):
                 self.sprites.remove(obj)
                 out.append(obj)
+        out += self.collisions_update()
         return out
 
     def spawn_alien(self, maxwidth: float) -> Alien:
@@ -141,17 +158,6 @@ class GameModel:
         bullet = Bullet(self.player.center, self.player.damage)
         self.sprites.append(bullet)
         return bullet
-
-    def start_wave(self) -> list[Alien]:
-        """Débute une vague d'ennemis"""
-        out: list[Alien] = []
-        for _ in range(random.randint(5, 10)):
-            alien = Alien(
-                    Point(random.random()*1200, random.random()*-300)
-            )
-            self.sprites.append(alien)
-            out.append(alien)
-        return out
 
 
 class HighscoreModel(Model):

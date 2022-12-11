@@ -25,7 +25,7 @@ class Vaisseau(Object):
     def __init__(self, position: Point):
         super().__init__(position, width=100, height=100)
         self.max_speed = 10
-        self.damage = 5
+        self.firepower = 25
         self.health = 100
 
     def move_to(self, destination: Point) -> None:

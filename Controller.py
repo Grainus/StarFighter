@@ -134,7 +134,7 @@ class GameController(Controller):
     """
     def __init__(self, root: tk.Tk):
         super().__init__(root)
-        self.eventPos = (0, 0)
+        self.eventPos = (1, 1)
         self.view: GameView = GameView(self.main_frame)
         self.game = GameModel(Difficulty.NORMAL)
         self.game.player.id = self.view.spawnPlayer(590, 750)
@@ -215,12 +215,8 @@ class GameController(Controller):
         for obj in self.game.sprites:
             self.view.moveSprite(obj.id, *obj.position)
 
-        # Vérifie les collisions
-        cols = self.game.get_collisions(self.game.player, (Alien, Asteroid))
-        for collision in cols:
-            self.game.player.hit(collision.damage)
-
-        self.view.canvas.after(16, self.tick)
+        if self.game.player_alive():
+            self.view.canvas.after(16, self.tick)
 
 
 class ArsenalController(Controller):
