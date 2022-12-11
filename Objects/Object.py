@@ -35,6 +35,7 @@ class Object(ABC):
         self.id = 0
         self.health = 0
         self.damage = 0
+        self.side = "neutral"  # Good guys or evil
 
     def _update_points(self) -> None:
         self.points = self.dimension.to_points(self.position, False)
@@ -92,3 +93,9 @@ class Object(ABC):
         self.speed += self.acceleration
         self.position += self.velocity
         self._update_points()
+
+    def hit(self, damage: int) -> None:
+        self.health -= damage
+
+    def alive(self) -> bool:
+        return self.health > 0

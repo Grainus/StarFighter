@@ -171,7 +171,7 @@ class GameController(Controller):
 
     def mouse_listener_left_click(self, event):
         """Création d'un projectile"""
-        bullet = self.game.spawn_bullet()
+        bullet = self.game.shoot(self.game.player)
         bullet.id = self.view.spawnBullet(*bullet.position)
 
     def player_movement(self):
@@ -215,8 +215,11 @@ class GameController(Controller):
         for obj in self.game.sprites:
             self.view.moveSprite(obj.id, *obj.position)
 
-        if self.game.player_alive():
+        if self.game.player.alive():
             self.view.canvas.after(16, self.tick)
+        else:
+            # Start game over?
+            print(f"Your score: {self.game.score}")
 
 
 class ArsenalController(Controller):

@@ -19,6 +19,7 @@
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
+from .Bullet import Bullet  # type: ignore
 
 class Vaisseau(Object):
     """Classe représentant un vaisseau joueur."""
@@ -27,6 +28,7 @@ class Vaisseau(Object):
         self.max_speed = 10
         self.firepower = 25
         self.health = 100
+        self.side = "good"
 
     def move_to(self, destination: Point) -> None:
         movevec = destination - self.position
@@ -34,5 +36,5 @@ class Vaisseau(Object):
             movevec = movevec.asnorm(min(movevec.norme, self.max_speed))
             self.position += movevec
 
-    def hit(self, damage: int) -> None:
-        self.health -= damage
+    def shoot(self) -> Bullet:
+        return Bullet(self.center, self.firepower, Vecteur(0, -15), "good")

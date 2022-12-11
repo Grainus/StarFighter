@@ -23,8 +23,15 @@ from .Position import Vecteur, Point  # type: ignore
 
 class Bullet(Object):
     """Classe pour les obus"""
-    def __init__(self, position: Point, damage: int):
+    def __init__(
+            self,
+            position: Point,
+            damage: int,
+            velocity: Vecteur,
+            side: str
+    ):
         super().__init__(position, width=5, height=5)
         self.velocity = Vecteur(0, -15)
         self.damage = damage
         self.health = 100
+        self.side = side

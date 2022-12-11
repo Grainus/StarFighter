@@ -20,6 +20,7 @@
 
 from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
+from .Bullet import Bullet  # type: ignore
 
 ALIENTYPES = (1, 2, 3, 4, 5)
 
@@ -31,3 +32,7 @@ class Alien(Object):
         self.health = 50
         self.damage = 5
         self.firepower = 10 # * difficulty
+        self.side = "evil"
+
+    def shoot(self) -> Bullet:
+        return Bullet(self.center, self.firepower, Vecteur(0, 15), "evil")

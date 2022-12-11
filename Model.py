@@ -66,14 +66,17 @@ class GameModel:
         self.player = Vaisseau(Point(590, 750))
         self.sprites: list[Object] = []
         self.stats = GameStats()
-
-    def player_alive(self) -> bool:
-        return self.player.health > 0
+        self.score = 0
 
     @overload
     def get_collisions(
             self, arg: Object, cls: Type[ObjT1]
     ) -> list[ObjT1]: ...
+
+    @overload
+    def get_collisions(
+            self, arg: Object, cls: tuple[Type[Object], ...]
+    ) -> list[Object]: ...
 
     @overload
     def get_collisions(
@@ -120,28 +123,41 @@ class GameModel:
                 if obj.collides(arg)
             ]
 
-    def collisions_update(self) -> list[Object]:
-        out: list[Object] = []
+    def collisions_update(self) -> set[Object]:
+        out: set[Object] = set()
 
         # Collisions avec le joueur
         for obj in self.get_collisions(self.player, (Alien, Asteroid)):
             self.player.hit(obj.damage)
-        if not self.player_alive():
-            out.append(self.player)
+
+        # Collisions balles
+        for (bullet, victim) in self.get_collisions(Bullet, Object):
+            if bullet.side != victim.side and bullet not in out:
+                victim.hit(bullet.damage)
+                out.add(bullet)
+                if not victim.alive():
+                    out.add(victim)
+                    if bullet.side == self.player.side:
+                        self.stats.enemies_killed += 1
+                        self.score += 1
 
         return out
 
-    def update(self, *, kill_if: Callable[[Object], bool]) -> list[Object]:
+    def update(self, *, kill_if: Callable[[Object], bool]) -> set[Object]:
         """Met à jour la position de tous les objets et vérifie les
         collisions.
         """
-        out: list[Object] = []
+        out: set[Object] = set()
         for obj in self.sprites:
             obj.update()
             if kill_if(obj):
-                self.sprites.remove(obj)
-                out.append(obj)
-        out += self.collisions_update()
+                out.add(obj)
+
+        out.update(self.collisions_update())
+
+        for obj in out:
+            self.sprites.remove(obj)
+
         return out
 
     def spawn_alien(self, maxwidth: float) -> Alien:
@@ -154,8 +170,8 @@ class GameModel:
         self.sprites.append(asteroid)
         return asteroid
 
-    def spawn_bullet(self) -> Bullet:
-        bullet = Bullet(self.player.center, self.player.damage)
+    def shoot(self, shooter: Vaisseau | Alien) -> Bullet:
+        bullet = shooter.shoot()
         self.sprites.append(bullet)
         return bullet
 
