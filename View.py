@@ -29,6 +29,12 @@ Classe:
     - optionsView : Classe de la vue des options
     - ArsenalView : Classe de la vue de l'arsenal
 """
+from abc import ABC
+
+from tkinter import PhotoImage
+from PIL import Image, ImageTk
+from functools import cache
+
 from Container import (
         BetterCanvas,
         BetterFrame,
@@ -36,10 +42,6 @@ from Container import (
         BetterButton,
         BetterListbox,
 )
-from tkinter import PhotoImage
-from PIL import Image, ImageTk
-from abc import ABC
-
 
 class View(ABC):
     """Classe abstraite de la vue
@@ -81,6 +83,7 @@ class View(ABC):
         self.main_frame.pack_forget()
 
     @staticmethod
+    @cache
     def img_format(file: str, dimensions: tuple[int, int]) -> PhotoImage:
         img = Image.open(file)
         img = img.resize(dimensions)
