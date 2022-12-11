@@ -32,11 +32,12 @@ from __future__ import annotations
 
 # Importation des modules standards
 
-from random import random, choice, randint
+from random import choice, randint
 import tkinter as tk
-from Container import BetterFrame
 from abc import ABC  # Classe abstraite
 
+from Highscore import HighScore
+from Container import BetterFrame
 from View import (
     View,
     MenuView,
@@ -220,6 +221,7 @@ class GameController(Controller):
         else:
             # Start game over?
             print(f"Your score: {self.game.score}")
+            HighScore.save_score("Player", self.game.score)
 
 
 class ArsenalController(Controller):
@@ -249,6 +251,8 @@ class HighscoreController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
+        # Saving score: Highscore.save_score(name, score)
+        # Getting score: HighScore.get_scores()
 
 
 class OptionsController(Controller):
