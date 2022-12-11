@@ -22,6 +22,7 @@ from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
 from .Bullet import Bullet  # type: ignore
 
+
 ALIENTYPES = (1, 2, 3, 4, 5)
 
 class Alien(Object):
