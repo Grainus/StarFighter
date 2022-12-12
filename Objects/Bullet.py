@@ -20,20 +20,18 @@
 
 from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
-from .Bullet import Bullet  # type: ignore
 
-
-ALIENTYPES = (1, 2, 3, 4, 5)
-
-class Alien(Object):
-    """Classe abstraite pour les aliens"""
-    def __init__(self, position: Point):
-        super().__init__(position, width=25, height=25)
-        self.velocity = Vecteur(0, 5)
-        self.health = 50
-        self.damage = 5
-        self.firepower = 10 # * difficulty
-        self.side = "evil"
-
-    def shoot(self) -> Bullet:
-        return Bullet(self.center, self.firepower, Vecteur(0, 15), "evil")
+class Bullet(Object):
+    """Classe pour les obus"""
+    def __init__(
+            self,
+            position: Point,
+            damage: int,
+            velocity: Vecteur,
+            side: str
+    ):
+        super().__init__(position, width=5, height=5)
+        self.velocity = Vecteur(0, -15)
+        self.damage = damage
+        self.health = 100
+        self.side = side

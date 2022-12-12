@@ -31,11 +31,24 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
+from random import choice, randint
 import tkinter as tk
 from abc import ABC  # Classe abstraite
 
-from View import MenuView, GameView, HighscoreView, OptionsView, ArsenalView
-
+from Highscore import HighScore
+from Container import BetterFrame
+from View import (
+    View,
+    MenuView,
+    GameView,
+    HighscoreView,
+    OptionsView,
+    ArsenalView,
+    GameOverView
+)
+from Model import GameModel, Difficulty
+from Objects.Position import Point  # type: ignore
+from Objects.Alien import ALIENTYPES  # type: ignore
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -46,21 +59,20 @@ class Controller(ABC):
     :param self.view: Vue associée au controlleur
     """
 
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         self.root = root
         """En quelque sorte, il s'agit de la fenêtre principale du jeu
         qui est aussi responsable de sa boucle principale."""
 
-        self.main_frame = tk.Frame(root)
+        self.main_frame = BetterFrame(root, 0, 0)
         """Frame principale du jeu. Elle contient toutes les autres frames"""
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.view = None
+        self.view: View
         """Vue associée au controlleur"""
 
     def start(self):
         """Lancement du controlleur"""
         self.view.draw()
-        self.bind_base_buttons()
 
     def quit_game(self):
         """Fermeture du jeu"""
@@ -70,29 +82,7 @@ class Controller(ABC):
         """Changement de controlleur"""
         self.view.destroy()
         self.root.controller = change_to(self.root)
-        self.root.controller.draw()
-
-    def bind_base_buttons(self):
-        # If present, bind the quit_button, the start_game button and the options button
-        if hasattr(self.view, "quit_button"):
-            self.view.quit_button.bind("<Button-1>",
-                                       lambda event: self.quit_game())
-
-        if hasattr(self.view, "start_game_button"):
-            self.view.start_game_button.bind("<Button-1>",
-                                             lambda event: self.change_controller(GameController))
-
-        if hasattr(self.view, "options_button"):
-            self.view.options_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(OptionsController))
-
-        if hasattr(self.view, "highscore_button"):
-            self.view.highscore_button.bind("<Button-1>",
-                                            lambda event: self.change_controller(HighscoreController))
-
-        if hasattr(self.view, "arsenal_button"):
-            self.view.arsenal_button.bind("<Button-1>",
-                                          lambda event: self.change_controller(ArsenalController))
+        self.root.controller.start()
 
 
 class MenuController(Controller):
@@ -104,9 +94,34 @@ class MenuController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = MenuView(self.main_frame)
+
+    def start(self):
+        self.view.main_canvas.tag_bind(self.view.quit_button,
+                                       "<Button-1>",
+                                       lambda _: self.quit_game())
+
+        self.view.main_canvas.tag_bind(self.view.play_button,
+                                       "<Button-1>",
+                                       lambda _:
+                                       self.change_controller(GameController))
+
+        self.view.main_canvas.tag_bind(self.view.options_button,
+                                       "<Button-1>",
+                                       lambda _:
+                                       self.change_controller
+                                       (OptionsController))
+
+        self.view.main_canvas.tag_bind(self.view.highscores_button,
+                                       "<Button-1>",
+                                       lambda _:
+                                       self.change_controller
+                                       (HighscoreController))
+
+
+        super().start()
 
 
 class GameController(Controller):
@@ -117,9 +132,99 @@ class GameController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         super().__init__(root)
-        self.view = GameView(self.main_frame)
+        self.eventPos = (1, 1)
+        self.view: GameView = GameView(self.main_frame)
+        self.game = GameModel(Difficulty.NORMAL)
+        self.game.player.id = self.view.spawnPlayer(590, 750)
+        self.bind_mouse_pregame()
+
+        self.ennemy_spawn_timer_max = 50
+        self.asteroid_spawn_timer_max = 120
+
+        self.ennemy_spawn_timer \
+            = randint(0, self.ennemy_spawn_timer_max)
+        self.asteroid_spawn_timer \
+            = randint(0, self.asteroid_spawn_timer_max)
+
+    def start(self):
+        super().start()
+
+    def initalize_game(self):
+        """Initialisation du jeu"""
+        self.bind_mouse_game()
+
+    def bind_mouse_pregame(self):
+        """Bind les boutons de la souris avant le début du jeu"""
+        self.view.canvas.bind("<Button-1>", lambda event: self.initalize_game())
+
+    def bind_mouse_game(self):
+        """Bind du carré à la souris afin qu'il suive le curseur"""
+        self.view.canvas.bind("<Motion>", self.mouse_listener_move)
+        self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
+        self.tick()
+
+    def mouse_listener_move(self, event):
+        """Déplacement du carré"""
+        self.eventPos = (event.x, event.y)
+
+    def mouse_listener_left_click(self, event):
+        """Création d'un projectile"""
+        bullet = self.game.shoot(self.game.player)
+        bullet.id = self.view.spawnBullet(*bullet.position)
+
+    def player_movement(self):
+        """Déplacement du joueur"""
+        destination = Point(*self.eventPos)
+        player = self.game.player  # Simpler alias
+        destination.x -= player.dimension.width / 2
+        destination.y -= player.dimension.height / 2
+        player.move_to(destination)
+        self.game.player.update()
+        self.view.canvas.moveto(self.game.player.id, *player.position)
+
+    def tick(self):
+        """Méthode appelée à chaque tick du jeu"""
+        if self.asteroid_spawn_timer == 0:
+            asteroid = self.game.spawn_asteroid(self.view.canvas.winfo_width())
+            asteroid.id = self.view.spawnAsteroid(*asteroid.position)
+            self.asteroid_spawn_timer = randint(0, self.asteroid_spawn_timer_max)
+        else:
+            self.asteroid_spawn_timer -= 1
+
+        if self.ennemy_spawn_timer == 0:
+            alien = self.game.spawn_alien(self.view.canvas.winfo_width())
+            alien.id = self.view.spawnAlien(choice(ALIENTYPES), *alien.position)
+            self.ennemy_spawn_timer = randint(0, self.ennemy_spawn_timer_max)
+        else:
+            self.ennemy_spawn_timer -= 1
+
+        # Effectue le mouvement du joueur
+        self.player_movement()
+
+        # Déplace tous les objets et les retire s'ils sont hors de l'écran
+
+        killcond = lambda obj: (
+                not self.view.isVisible(obj.id)
+        )
+
+        self.view.updateScore(self.game.score)
+
+        for trash in self.game.update(kill_if=killcond):
+            self.view.deleteSprite(trash.id)
+
+        for obj in self.game.sprites:
+            self.view.moveSprite(obj.id, *obj.position)
+
+        if self.game.player.alive():
+            self.view.canvas.after(16, self.tick)
+        else:
+            self.change_controller(GameOverController)
+            print(f"Your score: {self.game.score}")
+            self.root.controller.score =self.game.score
+            self.root.controller.show_score()
+            
 
 
 class ArsenalController(Controller):
@@ -132,7 +237,7 @@ class ArsenalController(Controller):
     :param self.view: Vue associée au controlleur
 
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = ArsenalView(self.main_frame)
 
@@ -146,10 +251,41 @@ class HighscoreController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = HighscoreView(self.main_frame)
+        self.view.main_canvas.tag_bind(self.view.menu_button, "<Button-1>",
+                                       lambda event:
+                                       self.change_controller(MenuController))
+        self.view.load_scores(HighScore.get_scores())
+        # Saving score: Highscore.save_score(name, score)
+        # Getting score: HighScore.get_scores()
 
+class GameOverController(Controller):
+    """Controlleur de la fin de partie
+
+    :argument root: Fenêtre principale du jeu
+
+    :param self.root: Fenêtre principale du jeu
+    :param self.main_frame: Frame graphique principale du jeu.
+    :param self.view: Vue associée au controlleur
+
+    """
+    def __init__(self, root: tk.Tk):
+        super().__init__(root)
+        self.view = GameOverView(self.main_frame)
+        self.score = 0
+        self.view.name_entry.bind("<Return>", self.on_submit)
+        self.view.name_entry.focus_set()
+
+    def show_score(self):
+        self.view.show_score(self.score)
+
+    def on_submit(self,_):
+        self.name = self.view.name_entry.get() 
+        if(self.name):
+            HighScore.save_score(self.name,self.score)
+        self.change_controller(HighscoreController)
 
 class OptionsController(Controller):
     """Controlleur des options
@@ -160,6 +296,10 @@ class OptionsController(Controller):
     :param self.main_frame: Frame graphique principale du jeu.
     :param self.view: Vue associée au controlleur
     """
-    def __init__(self, root: tk):
+    def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = OptionsView(self.main_frame)
+
+        self.view.main_canvas.tag_bind(self.view.menu_button, "<Button-1>",
+                                       lambda event:
+                                       self.change_controller(MenuController))

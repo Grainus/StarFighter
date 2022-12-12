@@ -17,9 +17,24 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
-import Object
-
+from .Object import Object  # type: ignore
+from .Position import Vecteur, Point  # type: ignore
+from .Bullet import Bullet  # type: ignore
 
 class Vaisseau(Object):
     """Classe représentant un vaisseau joueur."""
-    raise NotImplementedError
+    def __init__(self, position: Point):
+        super().__init__(position, width=100, height=100)
+        self.max_speed = 10
+        self.firepower = 25
+        self.health = 100
+        self.side = "good"
+
+    def move_to(self, destination: Point) -> None:
+        movevec = destination - self.position
+        if movevec.norme:
+            movevec = movevec.asnorm(min(movevec.norme, self.max_speed))
+            self.position += movevec
+
+    def shoot(self) -> Bullet:
+        return Bullet(self.center, self.firepower, Vecteur(0, -15), "good")
