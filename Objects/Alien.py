@@ -18,14 +18,14 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 
-from .Object import Object  # type: ignore
+from .AliveObject import AliveObject  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
 from .Bullet import Bullet  # type: ignore
 
 
 ALIENTYPES = (1, 2, 3, 4, 5)
 
-class Alien(Object):
+class Alien(AliveObject):
     """Classe abstraite pour les aliens"""
     def __init__(self, position: Point):
         super().__init__(position, width=25, height=25)

@@ -93,9 +93,3 @@ class Object(ABC):
         self.speed += self.acceleration
         self.position += self.velocity
         self._update_points()
-
-    def hit(self, damage: int) -> None:
-        self.health -= damage
-
-    def alive(self) -> bool:
-        return self.health > 0

@@ -17,24 +17,18 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
-from .AliveObject import AliveObject  # type: ignore
-from .Position import Vecteur, Point  # type: ignore
-from .Bullet import Bullet  # type: ignore
+from abc import ABC
 
-class Vaisseau(AliveObject):
-    """Classe représentant un vaisseau joueur."""
-    def __init__(self, position: Point):
-        super().__init__(position, width=100, height=100)
-        self.max_speed = 10
-        self.firepower = 25
-        self.health = 100
-        self.side = "good"
+from .Position import Point  # type: ignore
+from .Object import Object  # type: ignore
 
-    def move_to(self, destination: Point) -> None:
-        movevec = destination - self.position
-        if movevec.norme:
-            movevec = movevec.asnorm(min(movevec.norme, self.max_speed))
-            self.position += movevec
+class AliveObject(Object, ABC):
+    """Classe abstraite représentant un objet avec de la vie."""
+    def __init__(self, position: Point, width: float, height: float):
+        super().__init__(position, width, height)
 
-    def shoot(self) -> Bullet:
-        return Bullet(self.center, self.firepower, Vecteur(0, -15), "good")
+    def hit(self, damage: int) -> None:
+        self.health -= damage
+
+    def alive(self) -> bool:
+        return self.health > 0

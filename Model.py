@@ -25,6 +25,7 @@ from enum import Enum
 import random
 
 from Objects.Object import Object  # type: ignore
+from Objects.AliveObject import AliveObject  # type: ignore
 from Objects.Alien import Alien  # type: ignore
 from Objects.Asteroid import Asteroid  # type: ignore
 from Objects.Bullet import Bullet  # type: ignore
@@ -128,7 +129,7 @@ class GameModel:
             out.add(obj)
 
         # Collisions balles
-        for (bullet, victim) in self.get_collisions(Bullet, Object):
+        for (bullet, victim) in self.get_collisions(Bullet, AliveObject):
             if bullet.side != victim.side and bullet not in out:
                 victim.hit(bullet.damage)
                 out.add(bullet)
@@ -168,7 +169,8 @@ class GameModel:
         return asteroid
 
     def shoot(
-            self, shooter: Object | Type[Object] | tuple[Type[Object], ...]
+            self, 
+            shooter: AliveObject | Type[AliveObject] | tuple[Type[AliveObject], ...]
     ) -> Bullet:
         """Crée et retourne une balle tirée par l'objet passé en
         paramètre.
