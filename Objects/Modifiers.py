@@ -20,33 +20,38 @@
 from abc import ABC
 
 from .Object import Object  # type: ignore
+from .Position import Vecteur, Point  # type: ignore
 
 
 class Modifiers(Object, ABC):
     """Classe abstaite des modificateurs de vaisseau"""
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.velocity = Vecteur(0, 5)
 
 
-class UraniumRod(Modifiers):
-    """Modificateur de vaisseau: Uranium Rod"""
-    def __init__(self):
-        raise NotImplementedError
+class Health(Modifiers):
+    """Modificateur de vaisseau: HP+"""
+    def __init__(self, position: Point):
+        super().__init__(position, width=50, height=50)
 
 
 class Shield(Modifiers):
     """Modificateur de vaisseau: Bouclier"""
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, position: Point):
+        super().__init__(position, width=50, height=50)
 
 
 class Weapons(Modifiers):
     """Modificateur de vaisseau: Armes"""
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, position: Point):
+        super().__init__(position, width=50, height=50)
 
 
-class Torch(Modifiers):
-    """Modificateur de vaisseau: Torche"""
-    def __init__(self):
-        raise NotImplementedError
+class Experience(Modifiers):
+    """Objet qui donne des points en le touchant."""
+    def __init__(self, position: Point):
+        super().__init__(position, width=50, height=50)
+
+
+ALLMODS = (Health, Shield, Weapons,)

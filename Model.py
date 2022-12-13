@@ -29,8 +29,9 @@ from Objects.AliveObject import AliveObject  # type: ignore
 from Objects.Alien import Alien  # type: ignore
 from Objects.Asteroid import Asteroid  # type: ignore
 from Objects.Bullet import Bullet  # type: ignore
-from Objects.Vaisseau import Vaisseau  # type: ignore
+from Objects.Modifiers import ALLMODS, Modifiers
 from Objects.Position import Point  # type: ignore
+from Objects.Vaisseau import Vaisseau  # type: ignore
 
 
 ObjT1 = TypeVar("ObjT1", bound=Object)
@@ -167,6 +168,12 @@ class GameModel:
         asteroid = Asteroid(Point(random.random()*maxwidth, 0))
         self.sprites.append(asteroid)
         return asteroid
+
+    def spawn_modifier(self, maxwidth: float) -> Modifiers:
+        modtype = random.choice(ALLMODS)
+        mod = modtype(Point(random.random()*maxwidth, 0))
+        self.sprites.append(mod)
+        return mod
 
     def shoot(
             self, 

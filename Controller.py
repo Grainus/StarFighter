@@ -189,7 +189,7 @@ class GameController(Controller):
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
         if self.asteroid_spawn_timer == 0:
-            asteroid = self.game.spawn_asteroid(self.view.canvas.winfo_width())
+            asteroid = self.game.spawn_asteroid(self.view.dimension.width)
             asteroid.id = self.view.spawnAsteroid(*asteroid.position)
             self.asteroid_spawn_timer = random.randint(
                     0, self.asteroid_spawn_timer_max
@@ -198,7 +198,7 @@ class GameController(Controller):
             self.asteroid_spawn_timer -= 1
 
         if self.ennemy_spawn_timer == 0:
-            alien = self.game.spawn_alien(self.view.canvas.winfo_width())
+            alien = self.game.spawn_alien(self.view.dimension.width)
             alien.id = self.view.spawnAlien(
                     random.choice(ALIENTYPES), *alien.position
             )
@@ -208,9 +208,13 @@ class GameController(Controller):
         else:
             self.ennemy_spawn_timer -= 1
         
-        if random.randint(0, 25) == 0 and self.game.get_all_of(Alien):
+        if random.random() < 0.25 and self.game.get_all_of(Alien):
             bullet = self.game.shoot(Alien)
             bullet.id = self.view.spawnBulletAlien(*bullet.center)
+
+        if random.random() < 0.10:
+            mod = self.game.spawn_modifier(self.view.dimension.width)
+            mod.id = self.view.spawnModifier(mod)
 
         # Effectue le mouvement du joueur
         self.player_movement()
