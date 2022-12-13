@@ -334,7 +334,7 @@ class HighscoreView(View):
         
     def load_scores(self,scores:list):
         i=0
-        for score in scores:
+        for score in scores[::-1]:
             self.text = str(i+1)+": "+str(score[0][0])+" "+str(score[0][1])+" pts"
             self.main_canvas.create_text(
                 self.background_width /2,
