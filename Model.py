@@ -63,7 +63,7 @@ class GameModel:
     def __init__(self, difficulty: Difficulty):
         self.difficulty = difficulty
         self.player = Vaisseau(Point(590, 750))
-        self.sprites: list[Object] = []
+        self.sprites: list[Object] = [self.player]
         self.stats = GameStats()
         self.score = 0
 
@@ -107,18 +107,15 @@ class GameModel:
         if isinstance(arg, (type, tuple)):
             return [
                 (obj1, obj2)
-                for obj1 in self.sprites
-                if isinstance(obj1, arg)
-                for obj2 in self.sprites
-                if isinstance(obj2, cls)
+                for obj1 in self.get_all_of(arg)
+                for obj2 in self.get_all_of(cls)
                 if obj1.collides(obj2)
                 and obj1 is not obj2
             ]
         else:
             return [
                 obj
-                for obj in self.sprites
-                if isinstance(obj, cls)
+                for obj in self.get_all_of(cls)
                 if obj.collides(arg)
             ]
 
@@ -170,10 +167,34 @@ class GameModel:
         self.sprites.append(asteroid)
         return asteroid
 
-    def shoot(self, shooter: Vaisseau | Alien) -> Bullet:
-        bullet = shooter.shoot()
+    def shoot(
+            self, shooter: Object | Type[Object] | tuple[Type[Object], ...]
+    ) -> Bullet:
+        """Crée et retourne une balle tirée par l'objet passé en
+        paramètre.
+        
+        Si `shooter` est une instance, la balle est tirée par cet objet.
+        Si `shooter` est un type ou tuple de types, la balle est tirée
+        par un objet aléatoire qui répond à la condition
+        `isinstance(obj, shooter)`.
+        """
+        if isinstance(shooter, (type, tuple)):
+            shooters = self.get_all_of(shooter)
+            bullet = random.choice(shooters).shoot()
+        else:
+            bullet = shooter.shoot()
         self.sprites.append(bullet)
         return bullet
+
+    @overload
+    def get_all_of(self, cls: Type[ObjT1]) -> list[ObjT1]: ...
+
+    @overload
+    def get_all_of(self, cls: tuple[Type[Object]]) -> list[Object]: ...
+
+    def get_all_of(self, cls: Type[ObjT1] | tuple[Type[Object], ...]):
+        """Retourne tous les sprites d'une ou plusieurs classes."""
+        return [obj for obj in self.sprites if isinstance(obj, cls)]
 
 
 class HighscoreModel(Model):

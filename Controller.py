@@ -31,7 +31,7 @@ Contient :
 from __future__ import annotations
 
 # Importation des modules standards
-from random import choice, randint
+import random
 import tkinter as tk
 from abc import ABC  # Classe abstraite
 
@@ -48,7 +48,7 @@ from View import (
 )
 from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
-from Objects.Alien import ALIENTYPES  # type: ignore
+from Objects.Alien import Alien, ALIENTYPES  # type: ignore
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -143,10 +143,12 @@ class GameController(Controller):
         self.ennemy_spawn_timer_max = 50
         self.asteroid_spawn_timer_max = 120
 
-        self.ennemy_spawn_timer \
-            = randint(0, self.ennemy_spawn_timer_max)
-        self.asteroid_spawn_timer \
-            = randint(0, self.asteroid_spawn_timer_max)
+        self.ennemy_spawn_timer = random.randint(
+                0, self.ennemy_spawn_timer_max
+        )
+        self.asteroid_spawn_timer = random.randint(
+                0, self.asteroid_spawn_timer_max
+        )
 
     def start(self):
         super().start()
@@ -189,16 +191,26 @@ class GameController(Controller):
         if self.asteroid_spawn_timer == 0:
             asteroid = self.game.spawn_asteroid(self.view.canvas.winfo_width())
             asteroid.id = self.view.spawnAsteroid(*asteroid.position)
-            self.asteroid_spawn_timer = randint(0, self.asteroid_spawn_timer_max)
+            self.asteroid_spawn_timer = random.randint(
+                    0, self.asteroid_spawn_timer_max
+            )
         else:
             self.asteroid_spawn_timer -= 1
 
         if self.ennemy_spawn_timer == 0:
             alien = self.game.spawn_alien(self.view.canvas.winfo_width())
-            alien.id = self.view.spawnAlien(choice(ALIENTYPES), *alien.position)
-            self.ennemy_spawn_timer = randint(0, self.ennemy_spawn_timer_max)
+            alien.id = self.view.spawnAlien(
+                    random.choice(ALIENTYPES), *alien.position
+            )
+            self.ennemy_spawn_timer = random.randint(
+                    0, self.ennemy_spawn_timer_max
+            )
         else:
             self.ennemy_spawn_timer -= 1
+        
+        if random.randint(0, 25) == 0 and self.game.get_all_of(Alien):
+            bullet = self.game.shoot(Alien)
+            bullet.id = self.view.spawnBulletAlien(*bullet.center)
 
         # Effectue le mouvement du joueur
         self.player_movement()
