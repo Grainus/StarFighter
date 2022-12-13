@@ -128,6 +128,7 @@ class GameModel:
         # Collisions avec le joueur
         for obj in self.get_collisions(self.player, (Alien, Asteroid)):
             self.player.hit(obj.damage)
+            out.add(obj)
 
         # Collisions balles
         for (bullet, victim) in self.get_collisions(Bullet, Object):
