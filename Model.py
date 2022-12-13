@@ -71,27 +71,28 @@ class GameModel:
 
     @overload
     def get_collisions(
-            self, arg: Type[ObjT1], cls: Type[ObjT2]
+            self, arg: Type[ObjT1], cls: Type[ObjT2], direct: bool
     ) -> list[tuple[ObjT1, ObjT2]]: ...
 
     @overload
     def get_collisions(
-            self, arg: Type[ObjT1], cls: tuple[Type[Object], ...]
+            self, arg: Type[ObjT1], cls: tuple[Type[Object], ...], direct: bool
     ) -> list[tuple[ObjT1, Object]]: ...
 
     @overload
     def get_collisions(
-            self, arg: Object, cls: Type[ObjT1]
+            self, arg: Object, cls: Type[ObjT1], direct: bool
     ) -> list[ObjT1]: ...
 
     @overload
     def get_collisions(
-            self, arg: Object, cls: tuple[Type[Object], ...]
+            self, arg: Object, cls: tuple[Type[Object], ...], direct: bool
     ) -> list[Object]: ...
 
     def get_collisions(
             self, arg: Object | Type[ObjT1],
-            cls: Type[ObjT2] | tuple[Type[Object], ...]
+            cls: Type[ObjT2] | tuple[Type[Object], ...],
+            direct: bool = False
     ):
         """Retourne une liste d'objets en collision.
 
@@ -109,15 +110,15 @@ class GameModel:
         if isinstance(arg, (type, tuple)):
             return [
                 (obj1, obj2)
-                for obj1 in self.get_all_of(arg)
-                for obj2 in self.get_all_of(cls)
+                for obj1 in self.get_all_of(arg, direct)
+                for obj2 in self.get_all_of(cls, direct)
                 if obj1.collides(obj2)
                 and obj1 is not obj2
             ]
         else:
             return [
                 obj
-                for obj in self.get_all_of(cls)
+                for obj in self.get_all_of(cls, direct)
                 if obj.collides(arg)
             ]
 
@@ -125,7 +126,7 @@ class GameModel:
         out: set[Object] = set()
 
         # Collisions avec le joueur
-        for obj in self.get_collisions(self.player, (Alien, Asteroid)):
+        for obj in self.get_collisions(self.player, (Alien, Asteroid), True):
             self.player.hit(obj.damage)
             out.add(obj)
 
@@ -184,11 +185,10 @@ class GameModel:
         
         Si `shooter` est une instance, la balle est tirée par cet objet.
         Si `shooter` est un type ou tuple de types, la balle est tirée
-        par un objet aléatoire qui répond à la condition
-        `isinstance(obj, shooter)`.
+        par un objet aléatoire qui est une instance directe.
         """
         if isinstance(shooter, (type, tuple)):
-            shooters = self.get_all_of(shooter)
+            shooters = self.get_all_of(shooter, True)
             bullet = random.choice(shooters).shoot()
         else:
             bullet = shooter.shoot()
@@ -196,14 +196,26 @@ class GameModel:
         return bullet
 
     @overload
-    def get_all_of(self, cls: Type[ObjT1]) -> list[ObjT1]: ...
+    def get_all_of(self, cls: Type[ObjT1], direct: bool) -> list[ObjT1]: ...
 
     @overload
-    def get_all_of(self, cls: tuple[Type[Object]]) -> list[Object]: ...
+    def get_all_of(self, cls: tuple[Type[Object]], direct: bool) -> list[Object]: ...
 
-    def get_all_of(self, cls: Type[ObjT1] | tuple[Type[Object], ...]):
-        """Retourne tous les sprites d'une ou plusieurs classes."""
-        return [obj for obj in self.sprites if isinstance(obj, cls)]
+    def get_all_of(
+        self, cls: Type[ObjT1] | tuple[Type[Object], ...],
+        direct: bool = False
+    ):
+        """Retourne tous les sprites d'une ou plusieurs classes.
+        
+        Si `direct` est True, ignore l'héritage, ce qui est beaucoup
+        plus rapide.
+        """
+        if direct:
+            if isinstance(cls, type):
+                cls = (cls,)
+            return [obj for obj in self.sprites if obj.__class__ in cls]
+        else:
+            return [obj for obj in self.sprites if isinstance(obj, cls)]
 
 
 class HighscoreModel(Model):
