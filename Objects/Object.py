@@ -71,18 +71,13 @@ class Object(ABC):
         return self.position + self.dimension / 2
 
     def _collision_test(self, other: Object) -> bool:
-        overlap_x = (
+        return (  # Overlap X
             self.points[0].x <= other.points[0].x <= self.points[1].x or
             self.points[0].x <= other.points[1].x <= self.points[1].x
-        )
-        overlap_y = (
+        ) and (  # Overlap Y
             self.points[0].y <= other.points[0].y <= self.points[1].y or
             self.points[0].y <= other.points[1].y <= self.points[1].y
         )
-
-        if overlap_x and overlap_y :
-            return True
-        return False
 
     def collides(self, other: Object) -> bool:
         """Vérifie si deux objets sont en collision"""

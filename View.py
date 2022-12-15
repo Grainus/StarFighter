@@ -317,7 +317,7 @@ class GameView(View):
             x, y = (coords[0]+coords[2]) / 2, (coords[1]+coords[3]) / 2
         else:
             raise NotImplementedError(f"Invalid object size: {coords}")
-        return 0 < x < self.dimension.width or 0 < y < self.dimension.height
+        return 0 < x < self.dimension.width and 0 < y < self.dimension.height
 
     def updateScore(self,score:int):
         self.canvas.itemconfig(self.score_id, text="SCORE: "+ str(score))

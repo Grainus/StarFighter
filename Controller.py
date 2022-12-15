@@ -211,7 +211,7 @@ class GameController(Controller):
         if random.random() < 0.25 and self.game.get_all_of(Alien):
             bullet = self.game.shoot(Alien)
             bullet.id = self.view.spawnBulletAlien(*bullet.center)
-
+        
         if random.random() < 0.10:
             mod = self.game.spawn_modifier(self.view.dimension.width)
             mod.id = self.view.spawnModifier(mod)
@@ -223,6 +223,7 @@ class GameController(Controller):
 
         killcond = lambda obj: (
                 not self.view.isVisible(obj.id)
+                and obj.position.y > obj.dimension.height
         )
 
         self.view.updateScore(self.game.score)
