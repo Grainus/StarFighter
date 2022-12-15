@@ -85,6 +85,9 @@ class Object(ABC):
 
     def update(self) -> None:
         """Mise à jour de la position de l'objet selon sa vélocité"""
-        self.speed += self.acceleration
+        sp = self.speed
+        self.speed += self.acceleration 
+        if self.speed > sp and self.acceleration < 0:
+            self.speed = 0
         self.position += self.velocity
         self._update_points()

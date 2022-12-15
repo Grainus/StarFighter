@@ -18,9 +18,11 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 from abc import ABC
+import random
 
 from .Object import Object  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
+from .Vaisseau import Vaisseau  # type: ignore
 
 
 class Modifiers(Object, ABC):
@@ -50,8 +52,29 @@ class Weapons(Modifiers):
 
 class Experience(Modifiers):
     """Objet qui donne des points en le touchant."""
-    def __init__(self, position: Point):
-        super().__init__(position, width=50, height=50)
+    def __init__(self, position: Point, value: int, player: Vaisseau):
+        super().__init__(position, width=10, height=10)
+        self.velocity = Vecteur(0, random.random() * 10)
+        self.value = value
+        self.player = player
+        self.acceleration = -0.1
+
+    def update(self) -> None:
+        super().update()
+
+        destination = self.player.center
+        movevec = destination - self.position
+        a = destination - self.center
+        b = a.norme
+        self.velocity += movevec.asnorm(75 / b)
+        # if movevec.norme:
+        #     movevec = movevec.asnorm(
+        #             min(
+        #                 movevec.norme,
+        #                 self.max_speed
+        #             )
+        #     )
+        #     self.position += movevec
 
 
 ALLMODS = (Health, Shield, Weapons,)

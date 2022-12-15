@@ -49,6 +49,7 @@ from View import (
 from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
 from Objects.Alien import Alien, ALIENTYPES  # type: ignore
+from Objects.Modifiers import Experience
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -139,6 +140,7 @@ class GameController(Controller):
         self.game = GameModel(Difficulty.NORMAL)
         self.game.player.id = self.view.spawnPlayer(590, 750)
         self.bind_mouse_pregame()
+        self._enemy_spawn = False
 
         self.ennemy_spawn_timer_max = 50
         self.asteroid_spawn_timer_max = 120
@@ -165,6 +167,7 @@ class GameController(Controller):
         """Bind du carré à la souris afin qu'il suive le curseur"""
         self.view.canvas.bind("<Motion>", self.mouse_listener_move)
         self.view.canvas.bind("<Button-1>", self.mouse_listener_left_click)
+        self.view.canvas.bind("<Button-3>", self.debug_mouse_listener)
         self.tick()
 
     def mouse_listener_move(self, event):
@@ -175,6 +178,10 @@ class GameController(Controller):
         """Création d'un projectile"""
         bullet = self.game.shoot(self.game.player)
         bullet.id = self.view.spawnBullet(*bullet.position)
+
+    def debug_mouse_listener(self, *_):
+        """Toggle les nouveaux objets"""
+        self._enemy_spawn = not self._enemy_spawn
 
     def player_movement(self):
         """Déplacement du joueur"""
@@ -188,33 +195,39 @@ class GameController(Controller):
 
     def tick(self):
         """Méthode appelée à chaque tick du jeu"""
-        if self.asteroid_spawn_timer == 0:
-            asteroid = self.game.spawn_asteroid(self.view.dimension.width)
-            asteroid.id = self.view.spawnAsteroid(*asteroid.position)
-            self.asteroid_spawn_timer = random.randint(
-                    0, self.asteroid_spawn_timer_max
-            )
-        else:
-            self.asteroid_spawn_timer -= 1
+        width = self.view.dimension.width
+        if self._enemy_spawn:
+            if self.asteroid_spawn_timer == 0:
+                asteroid = self.game.spawn_asteroid(width)
+                asteroid.id = self.view.spawnAsteroid(*asteroid.position)
+                self.asteroid_spawn_timer = random.randint(
+                        0, self.asteroid_spawn_timer_max
+                )
+            else:
+                self.asteroid_spawn_timer -= 1
 
-        if self.ennemy_spawn_timer == 0:
-            alien = self.game.spawn_alien(self.view.dimension.width)
-            alien.id = self.view.spawnAlien(
-                    random.choice(ALIENTYPES), *alien.position
-            )
-            self.ennemy_spawn_timer = random.randint(
-                    0, self.ennemy_spawn_timer_max
-            )
-        else:
-            self.ennemy_spawn_timer -= 1
+            if self.ennemy_spawn_timer == 0:
+                alien = self.game.spawn_alien(width)
+                alien.id = self.view.spawnAlien(
+                        random.choice(ALIENTYPES), *alien.position
+                )
+                self.ennemy_spawn_timer = random.randint(
+                        0, self.ennemy_spawn_timer_max
+                )
+            else:
+                self.ennemy_spawn_timer -= 1
+            
+            if random.random() < 0.25 and self.game.get_all_of(Alien):
+                bullet = self.game.shoot(Alien)
+                bullet.id = self.view.spawnBulletAlien(*bullet.center)
+            
+            if random.random() < 0.005:
+                mod = self.game.spawn_modifier(width)
+                mod.id = self.view.spawnModifier(mod)
         
-        if random.random() < 0.25 and self.game.get_all_of(Alien):
-            bullet = self.game.shoot(Alien)
-            bullet.id = self.view.spawnBulletAlien(*bullet.center)
-        
-        if random.random() < 0.01:
-            mod = self.game.spawn_modifier(self.view.dimension.width)
-            mod.id = self.view.spawnModifier(mod)
+        if random.random() < 0.02:
+            exp = self.game.spawn_experience(width)
+            exp.id = self.view.spawnModifier(exp)
 
         # Effectue le mouvement du joueur
         self.player_movement()
@@ -224,6 +237,7 @@ class GameController(Controller):
         killcond = lambda obj: (
                 not self.view.isVisible(obj.id)
                 and obj.position.y > obj.dimension.height
+                and obj.__class__ is not Experience
         )
 
         self.view.updateScore(self.game.score)

@@ -197,8 +197,6 @@ class GameView(View):
         self.alien_height = 50 
         self.bullet_width = 50
         self.bullet_height = 50
-        self.mod_width = 50
-        self.mod_height =  50
 
         self.canvas = BetterCanvas(
             self.main_frame, 0.5, 0.5,

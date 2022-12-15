@@ -29,7 +29,7 @@ from Objects.AliveObject import AliveObject  # type: ignore
 from Objects.Alien import Alien  # type: ignore
 from Objects.Asteroid import Asteroid  # type: ignore
 from Objects.Bullet import Bullet  # type: ignore
-from Objects.Modifiers import ALLMODS, Modifiers  # type: ignore
+from Objects.Modifiers import ALLMODS, Experience, Modifiers  # type: ignore
 from Objects.Position import Point  # type: ignore
 from Objects.Vaisseau import Vaisseau  # type: ignore
 
@@ -141,6 +141,11 @@ class GameModel:
                         self.stats.enemies_killed += 1
                         self.score += 1
 
+        # Collisions exp
+        for exp in self.get_collisions(self.player, Experience):
+            self.score += exp.value
+            out.add(exp)
+
         return out
 
     def update(self, *, kill_if: Callable[[Object], bool]) -> set[Object]:
@@ -175,6 +180,12 @@ class GameModel:
         mod = modtype(Point(random.random()*maxwidth, 0))
         self.sprites.append(mod)
         return mod
+
+    def spawn_experience(self, maxwidth: float, val: int = None) -> Experience:
+        val = val or self.difficulty.value
+        exp = Experience(Point(random.random()*maxwidth, 0), val, self.player)
+        self.sprites.append(exp)
+        return exp
 
     def shoot(
             self, 
