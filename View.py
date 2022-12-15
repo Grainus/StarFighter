@@ -42,14 +42,14 @@ from Container import (
     BetterButton,
     BetterEntry,
 )
-from Objects.Modifiers import (
+from Objects.Modifiers import (  # type: ignore
     Modifiers,
     Health,
-    Shield,
-    Weapons,
+    # Shield,
+    # Weapons,
     Experience,
 )
-from Objects.Position import Dimension2D
+from Objects.Position import Dimension2D  # type: ignore
 
 class View(ABC):
     """Classe abstraite de la vue
@@ -249,8 +249,8 @@ class GameView(View):
         
         self.mod_colors = {
             Health: "green",
-            Shield: "blue",
-            Weapons: "red",
+            # Shield: "blue",
+            # Weapons: "red",
             Experience: "yellow",
         }
 

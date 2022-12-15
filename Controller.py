@@ -140,7 +140,7 @@ class GameController(Controller):
         self.game = GameModel(Difficulty.NORMAL)
         self.game.player.id = self.view.spawnPlayer(590, 750)
         self.bind_mouse_pregame()
-        self._enemy_spawn = False
+        self._enemy_spawn = True
 
         self.ennemy_spawn_timer_max = 50
         self.asteroid_spawn_timer_max = 120

@@ -38,3 +38,8 @@ class Vaisseau(AliveObject):
 
     def shoot(self) -> Bullet:
         return Bullet(self.center, self.firepower, Vecteur(0, -15), "good")
+
+    def update(self) -> None:
+        if self.health > 100:
+            self.health -= 0.1
+        super().update()

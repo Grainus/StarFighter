@@ -123,6 +123,7 @@ class GameModel:
             ]
 
     def collisions_update(self) -> set[Object]:
+        # TODO: Could probably be done in a single loop
         out: set[Object] = set()
 
         # Collisions avec le joueur
@@ -145,6 +146,11 @@ class GameModel:
         for exp in self.get_collisions(self.player, Experience):
             self.score += exp.value
             out.add(exp)
+
+        # Modifiers exp
+        for mod in self.get_collisions(self.player, ALLMODS):
+            mod.activate(self.player)
+            out.add(mod)
 
         return out
 

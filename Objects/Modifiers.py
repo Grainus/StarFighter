@@ -17,7 +17,7 @@
 # DE TOUT DOMMAGE, RÉCLAMATION OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT,
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
-from abc import ABC
+from abc import ABC, abstractmethod
 import random
 
 from .Object import Object  # type: ignore
@@ -31,23 +31,29 @@ class Modifiers(Object, ABC):
         super().__init__(*args, **kwargs)
         self.velocity = Vecteur(0, 5)
 
+    @abstractmethod
+    def activate(self, player: Vaisseau) -> None: ...
+
 
 class Health(Modifiers):
     """Modificateur de vaisseau: HP+"""
     def __init__(self, position: Point):
-        super().__init__(position, width=50, height=50)
+        super().__init__(position, width=25, height=25)
+
+    def activate(self, player: Vaisseau):
+        player.health += 25
 
 
-class Shield(Modifiers):
-    """Modificateur de vaisseau: Bouclier"""
-    def __init__(self, position: Point):
-        super().__init__(position, width=50, height=50)
+# class Shield(Modifiers):
+#     """Modificateur de vaisseau: Bouclier"""
+#     def __init__(self, position: Point):
+#         super().__init__(position, width=50, height=50)
 
 
-class Weapons(Modifiers):
-    """Modificateur de vaisseau: Armes"""
-    def __init__(self, position: Point):
-        super().__init__(position, width=50, height=50)
+# class Weapons(Modifiers):
+#     """Modificateur de vaisseau: Armes"""
+#     def __init__(self, position: Point):
+#         super().__init__(position, width=50, height=50)
 
 
 class Experience(Modifiers):
@@ -58,6 +64,10 @@ class Experience(Modifiers):
         self.value = value
         self.player = player
         self.acceleration = -0.1
+
+    def activate(self):
+        """Utilisé dans modèle directement."""
+        pass
 
     def update(self) -> None:
         super().update()
@@ -77,4 +87,4 @@ class Experience(Modifiers):
         #     self.position += movevec
 
 
-ALLMODS = (Health, Shield, Weapons,)
+ALLMODS = (Health,)
