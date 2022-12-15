@@ -23,10 +23,21 @@ Ce module contient la classe Root qui est la fenêtre principale du jeu.
 Elle est aussi responsable de lancer le controlleur de menu et de lancer
 la boucle principale du jeu.
 """
+#  Debugging
+import sys 
+import pstats
+import cProfile
 
 import tkinter as tk
 
 from Controller import MenuController
+
+
+def debugger_is_active() -> bool:
+    """Retourne si le programme est lancé dans un debugger.
+    Source: https://stackoverflow.com/a/67065084
+    """
+    return hasattr(sys, 'gettrace') and sys.gettrace() is not None
 
 
 class Root(tk.Tk):
@@ -46,11 +57,18 @@ class Root(tk.Tk):
         self.geometry("1200x800")
 
 
-if __name__ == "__main__":
-    """Lancement du jeu
-    
-    Lancement du jeu en créant une instance de Root et en lançant
-    """
+def main() -> None:
+    """Fonction d'entrée du programme. Lance le jeu"""
     root = Root()
     root.controller.start()
     root.mainloop()
+
+
+if __name__ == "__main__":
+    if debugger_is_active():
+        with cProfile.Profile() as pr:
+            main()
+            stats = pstats.Stats(pr).sort_stats('tottime')
+            stats.print_stats(25)
+    else:
+        main()

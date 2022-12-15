@@ -18,13 +18,13 @@
 # D’UN DÉLIT OU AUTRE, EN PROVENANCE DE, CONSÉCUTIF À OU EN RELATION AVEC LE LOGICIEL OU SON UTILISATION,
 # OU AVEC D’AUTRES ÉLÉMENTS DU LOGICIEL.
 
-from .Object import Object  # type: ignore
+from .AliveObject import AliveObject  # type: ignore
 from .Position import Vecteur, Point  # type: ignore
 
-class Asteroid(Object):
+class Asteroid(AliveObject):
     """Classe pour les astéroides"""
     def __init__(self, position: Point):
         super().__init__(position, width=5, height=5)
         self.velocity = Vecteur(0, 7)
         self.health = 30
-        self.damage = 15
+        self.damage = 25

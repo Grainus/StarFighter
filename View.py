@@ -36,12 +36,20 @@ from PIL import Image, ImageTk  # type: ignore
 from functools import cache
 
 from Container import (
-        BetterCanvas,
-        BetterFrame,
-        BetterLabel,
-        BetterButton,
-        BetterEntry,
+    BetterCanvas,
+    BetterFrame,
+    BetterLabel,
+    BetterButton,
+    BetterEntry,
 )
+from Objects.Modifiers import (  # type: ignore
+    Modifiers,
+    Health,
+    # Shield,
+    # Weapons,
+    Experience,
+)
+from Objects.Position import Dimension2D  # type: ignore
 
 class View(ABC):
     """Classe abstraite de la vue
@@ -190,10 +198,12 @@ class GameView(View):
         self.bullet_width = 50
         self.bullet_height = 50
 
-        self.canvas = BetterCanvas(self.main_frame, 0.5, 0.5,
-                                        width=self.background_width,
-                                        height=self.background_height,
-                                        highlightthickness=0)
+        self.canvas = BetterCanvas(
+            self.main_frame, 0.5, 0.5,
+            width=self.background_width,
+            height=self.background_height,
+            highlightthickness=0
+        )
 
         self.canvas.config(bg="black", width=1200, height=800)
         
@@ -236,6 +246,13 @@ class GameView(View):
             4: self.alien4_img,
             5: self.alien5_img
         }
+        
+        self.mod_colors = {
+            Health: "green",
+            # Shield: "blue",
+            # Weapons: "red",
+            Experience: "yellow",
+        }
 
         self.background = self.canvas.create_image(
             self.background_width/2, self.background_height/2,
@@ -244,6 +261,18 @@ class GameView(View):
         self.score_id = self.canvas.create_text(
             175, 25,
             text = "SCORE: 0", font="Fixedsys 50 bold",fill="white"
+        )
+        self.life_id = self.canvas.create_text(
+            900, 25, justify="right",
+            text = "LIFE: 100", font="Fixedsys 50 bold",fill="white"
+        )
+
+    @property
+    def dimension(self) -> Dimension2D:
+        """Retourne la taille du canvas de jeu."""
+        return Dimension2D(
+                self.canvas.winfo_width(),
+                self.canvas.winfo_height()
         )
 
     def draw(self):
@@ -269,6 +298,12 @@ class GameView(View):
     def spawnAsteroid(self, x, y) -> int:
         return self.canvas.create_image(x, y, image=self.asteroid_img)
 
+    def spawnModifier(self, mod: Modifiers) -> int:
+        point1, point2 = mod.points
+        return self.canvas.create_rectangle(
+            *point1, *point2, fill=self.mod_colors[type(mod)]
+        )
+
     def moveSprite(self, sprite, x, y):
         self.canvas.moveto(sprite, x, y)
 
@@ -277,14 +312,18 @@ class GameView(View):
 
     def isVisible(self, sprite):
         # If the sprite is not visible (out of the window), return False
-        x, y= self.canvas.coords(sprite)
-        if x < 0 or x > self.canvas.winfo_width() or y < 0 or y > self.canvas.winfo_height():
-            return False
+        coords = self.canvas.coords(sprite)
+        if len(coords) == 2:
+            x, y = coords
+        elif len(coords) == 4:
+            x, y = (coords[0]+coords[2]) / 2, (coords[1]+coords[3]) / 2
         else:
-            return True
+            raise NotImplementedError(f"Invalid object size: {coords}")
+        return 0 < x < self.dimension.width and 0 < y < self.dimension.height
 
-    def updateScore(self,score:int):
-        self.canvas.itemconfig(self.score_id, text="SCORE: "+ str(score))
+    def update_info(self, score: int, life: float) -> None:
+        self.canvas.itemconfig(self.score_id, text=f"SCORE: {score}")
+        self.canvas.itemconfig(self.life_id, text=f"LIFE: {life:.1f}")
 
 
 class HighscoreView(View):
