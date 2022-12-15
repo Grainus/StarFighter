@@ -68,7 +68,6 @@ class GameModel:
         self.sprites: list[Object] = [self.player]
         self.stats = GameStats()
         self.score = 0
-        self._DEBUG_VAR = len(self.sprites)
 
     @overload
     def get_collisions(
@@ -148,11 +147,6 @@ class GameModel:
         """Met à jour la position de tous les objets et vérifie les
         collisions.
         """
-        ln = len(self.sprites)
-        if ln != self._DEBUG_VAR:
-            print(ln)   # DEBUG TODO REMOVE
-            self._DEBUG_VAR = ln
-
         out: set[Object] = set()
         for obj in self.sprites:
             obj.update()
@@ -163,7 +157,6 @@ class GameModel:
 
         for obj in out:
             self.sprites.remove(obj)
-            print("REMOVING", obj)
 
         return out
 

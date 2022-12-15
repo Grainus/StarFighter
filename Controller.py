@@ -212,7 +212,7 @@ class GameController(Controller):
             bullet = self.game.shoot(Alien)
             bullet.id = self.view.spawnBulletAlien(*bullet.center)
         
-        if random.random() < 0.10:
+        if random.random() < 0.01:
             mod = self.game.spawn_modifier(self.view.dimension.width)
             mod.id = self.view.spawnModifier(mod)
 
