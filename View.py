@@ -262,6 +262,10 @@ class GameView(View):
             175, 25,
             text = "SCORE: 0", font="Fixedsys 50 bold",fill="white"
         )
+        self.life_id = self.canvas.create_text(
+            900, 25, justify="right",
+            text = "LIFE: 100", font="Fixedsys 50 bold",fill="white"
+        )
 
     @property
     def dimension(self) -> Dimension2D:
@@ -317,8 +321,9 @@ class GameView(View):
             raise NotImplementedError(f"Invalid object size: {coords}")
         return 0 < x < self.dimension.width and 0 < y < self.dimension.height
 
-    def updateScore(self,score:int):
-        self.canvas.itemconfig(self.score_id, text="SCORE: "+ str(score))
+    def update_info(self, score: int, life: float) -> None:
+        self.canvas.itemconfig(self.score_id, text=f"SCORE: {score}")
+        self.canvas.itemconfig(self.life_id, text=f"LIFE: {life:.1f}")
 
 
 class HighscoreView(View):

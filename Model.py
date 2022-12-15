@@ -188,7 +188,7 @@ class GameModel:
         return mod
 
     def spawn_experience(self, maxwidth: float, val: int = None) -> Experience:
-        val = val or self.difficulty.value
+        val = val or int(self.difficulty.value)  # Easy ne donne pas d'exp
         exp = Experience(Point(random.random()*maxwidth, 0), val, self.player)
         self.sprites.append(exp)
         return exp

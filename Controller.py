@@ -240,7 +240,7 @@ class GameController(Controller):
                 and obj.__class__ is not Experience
         )
 
-        self.view.updateScore(self.game.score)
+        self.view.update_info(self.game.score, self.game.player.health)
 
         for trash in self.game.update(kill_if=killcond):
             self.view.deleteSprite(trash.id)

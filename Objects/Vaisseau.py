@@ -27,7 +27,7 @@ class Vaisseau(AliveObject):
         super().__init__(position, width=100, height=100)
         self.max_speed = 10
         self.firepower = 25
-        self.health = 100
+        self.health = 100.0
         self.side = "good"
 
     def move_to(self, destination: Point) -> None:
@@ -42,4 +42,6 @@ class Vaisseau(AliveObject):
     def update(self) -> None:
         if self.health > 100:
             self.health -= 0.1
+        else:
+            self.health = round(self.health)
         super().update()
