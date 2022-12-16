@@ -25,11 +25,13 @@ from enum import Enum
 import random
 
 from Objects.Object import Object  # type: ignore
+from Objects.AliveObject import AliveObject  # type: ignore
 from Objects.Alien import Alien  # type: ignore
 from Objects.Asteroid import Asteroid  # type: ignore
 from Objects.Bullet import Bullet  # type: ignore
-from Objects.Vaisseau import Vaisseau  # type: ignore
+from Objects.Modifiers import ALLMODS, Experience, Modifiers  # type: ignore
 from Objects.Position import Point  # type: ignore
+from Objects.Vaisseau import Vaisseau  # type: ignore
 
 
 ObjT1 = TypeVar("ObjT1", bound=Object)
@@ -63,7 +65,7 @@ class GameModel:
     def __init__(self, difficulty: Difficulty):
         self.difficulty = difficulty
         self.player = Vaisseau(Point(590, 750))
-        self.sprites: list[Object] = []
+        self.sprites: list[Object] = [self.player]
         self.stats = GameStats()
         self.score = 0
 
@@ -89,7 +91,7 @@ class GameModel:
 
     def get_collisions(
             self, arg: Object | Type[ObjT1],
-            cls: Type[ObjT2] | tuple[Type[Object], ...]
+            cls: Type[ObjT2] | tuple[Type[Object], ...],
     ):
         """Retourne une liste d'objets en collision.
 
@@ -104,33 +106,33 @@ class GameModel:
             contenants toutes les paires d'objets de type `arg` et `cls`
             qui sont en collision.
         """
+        comparelist = self.get_all_of(cls)
         if isinstance(arg, (type, tuple)):
             return [
                 (obj1, obj2)
-                for obj1 in self.sprites
-                if isinstance(obj1, arg)
-                for obj2 in self.sprites
-                if isinstance(obj2, cls)
+                for obj1 in self.get_all_of(arg)
+                for obj2 in comparelist
                 if obj1.collides(obj2)
                 and obj1 is not obj2
             ]
         else:
             return [
                 obj
-                for obj in self.sprites
-                if isinstance(obj, cls)
+                for obj in comparelist
                 if obj.collides(arg)
             ]
 
     def collisions_update(self) -> set[Object]:
+        # TODO: Could probably be done in a single loop
         out: set[Object] = set()
 
         # Collisions avec le joueur
         for obj in self.get_collisions(self.player, (Alien, Asteroid)):
             self.player.hit(obj.damage)
+            out.add(obj)
 
         # Collisions balles
-        for (bullet, victim) in self.get_collisions(Bullet, Object):
+        for (bullet, victim) in self.get_collisions(Bullet, AliveObject):
             if bullet.side != victim.side and bullet not in out:
                 victim.hit(bullet.damage)
                 out.add(bullet)
@@ -139,6 +141,16 @@ class GameModel:
                     if bullet.side == self.player.side:
                         self.stats.enemies_killed += 1
                         self.score += 1
+
+        # Collisions exp
+        for exp in self.get_collisions(self.player, Experience):
+            self.score += exp.value
+            out.add(exp)
+
+        # Modifiers exp
+        for mod in self.get_collisions(self.player, ALLMODS):
+            mod.activate(self.player)
+            out.add(mod)
 
         return out
 
@@ -169,10 +181,46 @@ class GameModel:
         self.sprites.append(asteroid)
         return asteroid
 
-    def shoot(self, shooter: Vaisseau | Alien) -> Bullet:
-        bullet = shooter.shoot()
+    def spawn_modifier(self, maxwidth: float) -> Modifiers:
+        modtype = random.choice(ALLMODS)
+        mod = modtype(Point(random.random()*maxwidth, 0))
+        self.sprites.append(mod)
+        return mod
+
+    def spawn_experience(self, maxwidth: float, val: int = None) -> Experience:
+        val = val or int(self.difficulty.value)  # Easy ne donne pas d'exp
+        exp = Experience(Point(random.random()*maxwidth, 0), val, self.player)
+        self.sprites.append(exp)
+        return exp
+
+    def shoot(
+            self, 
+            shooter: AliveObject | Type[AliveObject] | tuple[Type[AliveObject], ...]
+    ) -> Bullet:
+        """Crée et retourne une balle tirée par l'objet passé en
+        paramètre.
+        
+        Si `shooter` est une instance, la balle est tirée par cet objet.
+        Si `shooter` est un type ou tuple de types, la balle est tirée
+        par un objet aléatoire qui est une instance directe.
+        """
+        if isinstance(shooter, (type, tuple)):
+            shooters: list[AliveObject] = self.get_all_of(shooter)
+            bullet = random.choice(shooters).shoot()
+        else:
+            bullet = shooter.shoot()
         self.sprites.append(bullet)
         return bullet
+
+    @overload
+    def get_all_of(self, cls: Type[ObjT1]) -> list[ObjT1]: ...
+
+    @overload
+    def get_all_of(self, cls: tuple[Type[Object], ...]) -> list[Object]: ...
+
+    def get_all_of(self, cls: Type[ObjT1] | tuple[Type[Object], ...]):
+        """Retourne tous les sprites d'une ou plusieurs classes."""
+        return [obj for obj in self.sprites if isinstance(obj, cls)]
 
 
 class HighscoreModel(Model):

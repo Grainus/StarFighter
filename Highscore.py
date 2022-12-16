@@ -118,8 +118,9 @@ class HighScore:
         con = HighScore.connect()
         cur = con.cursor()
 
+        # SQL Injection potential, but ? template didn't work
         exc = cur.execute(
-            f"SELECT * FROM HighScores ORDER BY ? DESC", (order,)
+            f"SELECT * FROM HighScores ORDER BY {order} DESC"
         )
 
         result = exc.fetchall()
