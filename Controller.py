@@ -50,6 +50,7 @@ from Model import GameModel, Difficulty
 from Objects.Position import Point  # type: ignore
 from Objects.Alien import Alien, ALIENTYPES  # type: ignore
 from Objects.Modifiers import Experience
+from Objects.Parallax import Parallax
 
 class Controller(ABC):
     """Classe abstraite des controlleurs
@@ -98,31 +99,62 @@ class MenuController(Controller):
     def __init__(self, root: tk.Tk):
         super().__init__(root)
         self.view = MenuView(self.main_frame)
+        self.pt = Point(0,-1000)
+        self.parallax_1 = Parallax(self.pt, 11)
+        self.parallax_2 = Parallax(self.pt, 8)
+        self.parallax_3 = Parallax(self.pt, 7)
+        self.parallax_4 = Parallax(self.pt, 2)
+        self.parallax_5 = Parallax(self.pt, 1)
+        self.parallax_6 = Parallax(self.pt, 4)
+        self.parallax_7 = Parallax(self.pt, 3)
+        self.parallax_8 = Parallax(self.pt, 1)
+        self.parallax_9 = Parallax(self.pt, 1)
+
+        self.parallax_List = [self.parallax_1,self.parallax_2,self.parallax_3,
+            self.parallax_4,self.parallax_5,self.parallax_6,self.parallax_7,
+            self.parallax_8,self.parallax_9,]
+        
+        index = 0
+        for parallax in self.parallax_List:
+            parallax.id = self.view.spawnParallax(*parallax.position, index)
+            index+=1
+        
+        self.parallax_Tick()
 
     def start(self):
-        self.view.main_canvas.tag_bind(self.view.quit_button,
+        self.view.quit_button.bind(
                                        "<Button-1>",
                                        lambda _: self.quit_game())
 
-        self.view.main_canvas.tag_bind(self.view.play_button,
+        self.view.play_button.bind("<Button-1>",
+                                       lambda _:
+                                       [self.change_controller(GameController),
+                                       self.stop_Parallax(True)])
+
+        self.view.options_button.bind(
                                        "<Button-1>",
                                        lambda _:
-                                       self.change_controller(GameController))
+                                       [self.change_controller(OptionsController),
+                                       self.stop_Parallax(True)])
 
-        self.view.main_canvas.tag_bind(self.view.options_button,
+        self.view.highscores_button.bind(
                                        "<Button-1>",
                                        lambda _:
-                                       self.change_controller
-                                       (OptionsController))
+                                       [self.change_controller(HighscoreController),
+                                       self.stop_Parallax(True)])
+        
+    def parallax_Tick(self):
+        for parallax in self.parallax_List:
+            self.view.move_Parallax(parallax, *parallax.position)
+            parallax.update()
+            # Debug print(f"{parallax.position}")
+            super().start()
+        self.stop_Parallax(False)
+        
+    def stop_Parallax(self, bool: bool):
+        if bool == False:
+            self.view.main_canvas.after(16, self.parallax_Tick)
 
-        self.view.main_canvas.tag_bind(self.view.highscores_button,
-                                       "<Button-1>",
-                                       lambda _:
-                                       self.change_controller
-                                       (HighscoreController))
-
-
-        super().start()
 
 
 class GameController(Controller):
