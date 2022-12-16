@@ -31,9 +31,10 @@ Classe:
 """
 from abc import ABC
 
-from tkinter import PhotoImage
+from tkinter import PhotoImage, Button
 from PIL import Image, ImageTk  # type: ignore
 from functools import cache
+from Objects import Parallax
 
 from Container import (
     BetterCanvas,
@@ -122,9 +123,46 @@ class MenuView(View):
         self.btn_height = 200
 
         self.background_img = self.img_format(
-            "Graphics/background.gif", (self.background_width,
+            "Graphics/bg_0.png", (self.background_width,
                                         self.background_height)
         )
+        self.parallax1_img = self.img_format(
+            "Graphics/background/bg_1.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax2_img = self.img_format(
+            "Graphics/background/bg_2.png", (self.background_width,
+                                        1800)
+        )        
+        self.parallax3_img = self.img_format(
+            "Graphics/background/bg_3.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax4_img = self.img_format(
+            "Graphics/background/bg_4.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax5_img = self.img_format(
+            "Graphics/background/bg_5.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax6_img = self.img_format(
+            "Graphics/background/bg_6.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax7_img = self.img_format(
+            "Graphics/background/bg_7.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax8_img = self.img_format(
+            "Graphics/background/bg_8.png", (self.background_width,
+                                        1800)
+        )
+        self.parallax9_img = self.img_format(
+            "Graphics/background/bg_9.png", (self.background_width,
+                                        1800)
+        )
+
         self.logo_img = self.img_format(
             "Graphics/logo.png", (self.logo_width, self.logo_height)
         )
@@ -151,30 +189,49 @@ class MenuView(View):
         self.background = self.main_canvas.create_image(
             self.background_width/2, self.background_height/2,
             image=self.background_img)
-
+        
+        self.parallax_List = [self.parallax1_img, self.parallax2_img, 
+            self.parallax3_img, self.parallax4_img, self.parallax5_img,
+            self.parallax6_img,self.parallax7_img, self.parallax8_img, 
+            self.parallax9_img]
+        
         self.logo = self.main_canvas.create_image(
             self.background_width/2, self.logo_height/2,
             image=self.logo_img)
 
-        self.play_button = self.main_canvas.create_image(
-            self.background_width*0.25, self.background_height*0.4,
-            image=self.play_img)
+        self.play_button = Button(main_frame, image=self.play_img, borderwidth=0)
+        self.play_button.config(bg="black")
+        self.play_button.place(x=150,y=200)
+        self.play_button.tkraise()
 
-        self.arsenal_button = self.main_canvas.create_image(
-            self.background_width*0.75, self.background_height*0.4,
-            image=self.arsenal_img)
+        self.arsenal_button = Button(main_frame, image=self.arsenal_img, borderwidth=0)
+        self.arsenal_button.config(bg="black")
+        self.arsenal_button.place(x=650,y=200)
+        self.arsenal_button.tkraise()
 
-        self.options_button = self.main_canvas.create_image(
-            self.background_width*0.25, self.background_height*0.6,
-            image=self.options_img)
+        self.options_button = Button(main_frame, image=self.options_img, borderwidth=0)
+        self.options_button.config(bg="black")
+        self.options_button.place(x=150,y=400)
+        self.options_button.tkraise()
         
-        self.highscores_button = self.main_canvas.create_image(
-            self.background_width*0.75, self.background_height*0.6,
-            image=self.highscores_img)
+        self.highscores_button = Button(main_frame, image=self.highscores_img, borderwidth=0)
+        self.highscores_button.config(bg="black")
+        self.highscores_button.place(x=650,y=400)
+        self.highscores_button.tkraise()
 
-        self.quit_button = self.main_canvas.create_image(
-            self.background_width*0.5, self.background_height*0.85,
-            image=self.quit_img)
+        self.quit_button = Button(main_frame, image=self.quit_img, borderwidth=0)
+        self.quit_button.config(bg="black")
+        self.quit_button.place(x=400,y=600)
+        self.quit_button.tkraise()
+
+    def move_Parallax(self, sprite: Parallax, x, y):
+        if(y >= 800):
+            sprite.backInPosition()
+                 
+        self.main_canvas.moveto(sprite.id, x, y)
+
+    def spawnParallax(self, x, y, index: int) -> int:
+        return self.main_canvas.create_image(x, y, image=self.parallax_List[index])
             
     def draw(self):
         """Méthode de lancement de la vue"""
